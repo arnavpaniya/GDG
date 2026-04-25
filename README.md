@@ -1,103 +1,158 @@
-# ⚖️ FairSight — Unbiased AI Decision Audit Platform
+# Nyaya AI ⚖️
 
-> **Hack2Skill: Build with AI — Google Solution Challenge Hackathon**
+> **Nyaya** (Sanskrit: न्याय) — *justice, fairness, ethical judgment.*
 
----
-
-## 👥 Team DHURANDARS
-
-| Name | Role |
-|------|------|
-| Arnav Paniya | |
-| Adarsh Gautam | |
-| Adarsh Singh | |
-| Pranit Gupta | |
+Nyaya AI is a bias detection platform that helps developers and organizations identify, measure, and explain unfairness in AI models and datasets — before their systems impact real people.
 
 ---
 
-## 📌 Problem Statement — Unbiased AI Decision
+## The Problem
 
-### Ensuring Fairness and Detecting Bias in Automated Decisions
-
-Computer programs now make life-changing decisions about who gets a job, a bank loan, or even medical care. However, if these programs learn from flawed or unfair historical data, they will repeat and amplify those exact same discriminatory mistakes.
-
-### Objective
-
-Build a clear, accessible solution to thoroughly inspect data sets and software models for hidden unfairness or discrimination. Provide organizations with an easy way to measure, flag, and fix harmful bias before their systems impact real people.
+AI systems now make life-changing decisions: who gets hired, who gets a loan, who receives medical care. When these systems learn from flawed historical data, they repeat and amplify the same discriminatory patterns — silently, at scale.
 
 ---
 
-## 🚀 Our Solution — Open Innovation Approach
+## What Nyaya AI Does
 
-We go beyond just auditing static datasets. FairSight is an end-to-end **AI-powered bias audit platform** accessible to any organization — no data scientists required.
+Upload a dataset or describe your AI model in chat. Nyaya AI:
 
-### Core Goals
-
-- **Detect** hidden bias in datasets and AI model outputs across demographic groups (gender, age, race, income, location)
-- **Visualize** disparities through intuitive dashboards anyone can read
-- **Fix** harmful patterns with AI-generated, plain-English recommendations
-- **Export** compliance-ready audit reports in one click
-
----
-
-## 🔨 What We're Building
-
-### MVP Features
-
-- [ ] **CSV / JSON / Excel upload** — ingest any decision dataset
-- [ ] **AI Bias Engine** — Gemini API analyzes demographic disparities automatically
-- [ ] **Bias Score Dashboard** — per-category fairness scores (0–100) with charts
-- [ ] **Disparity Heatmap** — highlights which data columns drive unfair outcomes
-- [ ] **Fix Recommendations** — AI suggests columns to remove, reweight, or flag
-- [ ] **PDF Report Export** — one-click compliance-ready audit document
-
-### Demo Use Case
-
-🧑‍💼 **Hiring Bias** — upload resume screening decisions, expose gender/age discrimination instantly
+1. **Detects bias** — Identifies unfair patterns across protected attributes (gender, age, race, etc.)
+2. **Scores fairness** — Provides a 0–100 Fairness Score with clear thresholds
+3. **Explains in plain English** — No statistics degree required to understand the results
+4. **Recommends fixes** — Actionable next steps to reduce detected bias
+5. **Compares models** — Side-by-side fairness analysis across multiple AI systems
 
 ---
 
-## 💡 Open Innovation Add-ons
+## Features
 
-| Feature | Description |
-|--------|-------------|
-| 🔴 Live API Monitoring | Connect any live AI endpoint — continuous bias monitoring, not just one-time audit |
-| 🌍 Multilingual Bias Detection | Detect bias in non-English datasets — massively underserved globally |
-| 📊 Industry Templates | Pre-built bias checks for hiring, loan approval, healthcare triage, content moderation |
-| ⚠️ Severity Flagging | Auto-classify bias as Critical / Moderate / Minor with legal risk context |
-| 🔁 Before vs After Comparison | Show bias score improvement after applying AI-suggested fixes |
-| 📅 Audit History | Track fairness scores over time, detect model drift |
-
----
-
-## 🛠️ Tech Stack
-
-- **Frontend** — React + Recharts + TailwindCSS
-- **Backend** — Python FastAPI
-- **AI** — Google Gemini API
-- **PDF** — WeasyPrint / jsPDF
-- **Hosting** — Google Cloud / Firebase
+| Feature | Status |
+|---------|--------|
+| CSV dataset upload & analysis | ✅ MVP |
+| Fairness Score ring (0–100) | ✅ MVP |
+| Bias explanation cards | ✅ MVP |
+| Chat-based interface | ✅ MVP |
+| Attribute-level bias heatmap | ✅ MVP |
+| Model comparison table | 🔄 Advanced |
+| Real-time Bias Checker API | 🔄 Advanced |
+| PDF report generation | 🔄 Advanced |
 
 ---
 
-## 📅 Timeline
+## App Structure
 
-| Day | Goal |
-|-----|------|
-| 1–2 | UI wireframes + project setup |
-| 3–4 | File upload + data parsing |
-| 5–6 | Gemini bias engine integration |
-| 7–8 | Dashboard + charts |
-| 9 | PDF export + fix recommendations |
-| 10 | Polish + demo prep |
+```
+nyaya-ai/
+├── src/
+│   ├── components/
+│   │   ├── layout/
+│   │   │   ├── Sidebar.jsx          # Nav, history, new chat
+│   │   │   └── AppShell.jsx         # Root layout wrapper
+│   │   ├── chat/
+│   │   │   ├── ChatInput.jsx        # Input + file attach + prompt chips
+│   │   │   ├── MessageBubble.jsx    # User & AI messages
+│   │   │   └── PromptChips.jsx      # Suggested prompt pills
+│   │   ├── analysis/
+│   │   │   ├── FairnessScoreRing.jsx  # Animated SVG score gauge
+│   │   │   ├── BiasHeatmap.jsx        # Attribute × outcome grid
+│   │   │   ├── AttributeBarChart.jsx  # Per-group positive rate bars
+│   │   │   └── BiasExplanationCard.jsx # Plain-English result cards
+│   │   └── auth/
+│   │       └── LoginPage.jsx
+│   ├── pages/
+│   │   ├── Home.jsx         # Chat hero + Nyaya info below
+│   │   └── Login.jsx
+│   ├── store/
+│   │   └── useStore.js      # Zustand global state
+│   ├── utils/
+│   │   ├── csvParser.js     # PapaParse wrapper
+│   │   └── biasEngine.js    # Bias detection logic (prototype)
+│   ├── styles/
+│   │   └── tokens.css       # Design tokens (colors, spacing, type)
+│   └── main.jsx
+├── DESIGN_SKILL.md           # Full design system
+├── README.md
+└── package.json
+```
 
 ---
 
-## 🏆 Why FairSight Wins
+## Tech Stack
 
-> Existing tools like IBM AI Fairness 360 require ML expertise. ChatGPT can answer bias questions but isn't a workflow. **FairSight is the missing middle** — powerful bias detection wrapped in a product any HR team, bank, or hospital can use today.
+| Layer | Choice | Why |
+|-------|--------|-----|
+| Framework | React + Vite | Fast HMR, hackathon-friendly |
+| Styling | Tailwind CSS | Utility-first, consistent spacing |
+| Charts | Recharts | Declarative, React-native |
+| CSV parsing | PapaParse | In-browser, no backend needed |
+| State | Zustand | Minimal boilerplate |
+| Icons | Lucide React | Consistent, 1.5px stroke |
+| Routing | React Router v6 | File-based, simple |
+| PDF | jsPDF + html2canvas | Client-side report export |
 
 ---
 
-*Built with ❤️ by Team DHURANDARS for Hack2Skill 2025*
-# GDG
+## Design System
+
+See [`DESIGN_SKILL.md`](./DESIGN_SKILL.md) for:
+- Full color token system (light + dark mode)
+- Typography scale (Lora serif + system sans)
+- Component specs (chat input, score ring, cards)
+- Spacing scale, border radius, motion guidelines
+
+**Aesthetic**: Claude.ai-inspired — warm off-white (`#F5F4EF`), soft neutrals, generous whitespace, serif brand moments.
+
+---
+
+## Routes
+
+```
+/          →  Home (login gate → chat + info)
+/login     →  Auth page
+/chat/:id  →  Individual chat session
+```
+
+---
+
+## Getting Started
+
+```bash
+# Clone
+git clone https://github.com/your-org/nyaya-ai.git
+cd nyaya-ai
+
+# Install
+npm install
+
+# Dev server
+npm run dev
+
+# Build
+npm run build
+```
+
+---
+
+## Prototype Scope (Hackathon)
+
+This is a **frontend-only prototype**. Bias detection runs client-side using simplified statistical algorithms on uploaded CSV data. No backend or real ML model required.
+
+**Simulated analysis flow:**
+1. User uploads CSV in chat
+2. PapaParse extracts columns
+3. `biasEngine.js` computes group-level positive rates per attribute
+4. Disparate impact ratio calculated vs 80% rule threshold
+5. Results rendered as score + explanation cards in chat
+
+---
+
+## Team
+
+Built at a Google for Developers hackathon.
+Project: *Unbiased AI Decision — Ensuring Fairness and Detecting Bias in Automated Decisions*
+
+---
+
+## License
+
+MIT

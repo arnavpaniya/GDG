@@ -1,0 +1,122 @@
+@import "tailwindcss";
+
+@theme {
+  /* Base Palette - These will be overridden by theme selectors */
+  --color-bg-primary: var(--color-bg-primary);
+  --color-bg-secondary: var(--color-bg-secondary);
+  --color-bg-surface: var(--color-bg-surface);
+  --color-border: var(--color-border);
+  
+  --color-text-primary: var(--color-text-primary);
+  --color-text-secondary: var(--color-text-secondary);
+  --color-text-tertiary: var(--color-text-tertiary);
+
+  /* Accent Palette */
+  --color-accent-gold: var(--color-accent-gold);
+  --color-accent-teal: var(--color-accent-teal);
+  --color-accent-red: #E24B4A;
+  --color-accent-amber: #F5A623;
+  --color-accent-blue: var(--color-accent-blue);
+
+  /* Semantic Tokens */
+  --color-score-fair: var(--color-accent-teal);
+  --color-score-warn: var(--color-accent-amber);
+  --color-score-bias: var(--color-accent-red);
+
+  /* Fonts */
+  --font-serif: "Lora", serif;
+  --font-sans: var(--font-inter), system-ui, sans-serif;
+  --font-mono: var(--font-jetbrains), monospace;
+
+  /* Spacing */
+  --spacing-tight: 4px;
+  --spacing-compact: 8px;
+  --spacing-base: 12px;
+  --spacing-comfortable: 16px;
+  --spacing-section: 24px;
+  --spacing-large-section: 40px;
+  --spacing-hero-vertical: 64px;
+
+  /* Border Radius */
+  --radius-button: 10px;
+  --radius-card: 16px;
+  --radius-input: 16px;
+
+  /* Transitions */
+  --transition-fast: 120ms;
+  --transition-base: 200ms;
+}
+
+@layer base {
+  body {
+    @apply bg-bg-primary text-text-primary font-sans;
+  }
+  
+  h1, h2, h3, h4, h5, h6 {
+    @apply font-serif font-medium;
+  }
+}
+
+/* Base Variables (Default/Sepia) */
+:root {
+  --color-bg-primary: #F5F4EF;
+  --color-bg-secondary: #EEECD8;
+  --color-bg-surface: #FFFFFF;
+  --color-border: rgba(0, 0, 0, 0.12);
+  --color-text-primary: #1A1916;
+  --color-text-secondary: #6B6860;
+  --color-text-tertiary: #9A9890;
+  --color-accent-gold: #D4A017;
+  --color-accent-blue: #2D6BE4;
+  --color-accent-teal: #1D9E75;
+}
+
+/* Dark Mode (Midnight) */
+.dark, [data-theme='dark'] {
+  --color-bg-primary: #121210;
+  --color-bg-secondary: #1E1E1C;
+  --color-bg-surface: #242422;
+  --color-border: rgba(255, 255, 255, 0.1);
+  --color-text-primary: #F5F4EF;
+  --color-text-secondary: #AAA8A0;
+  --color-text-tertiary: #6B6860;
+  --color-accent-gold: #E5B028;
+  --color-accent-blue: #4A85F6;
+  --color-accent-teal: #24C693;
+}
+
+/* Nordic Theme (Cool Blue) */
+[data-theme='nordic'] {
+  --color-bg-primary: #F0F4F8;
+  --color-bg-secondary: #D9E2EC;
+  --color-bg-surface: #FFFFFF;
+  --color-border: rgba(16, 42, 67, 0.1);
+  --color-text-primary: #102A43;
+  --color-text-secondary: #486581;
+  --color-text-tertiary: #829AB1;
+  --color-accent-gold: #2D6BE4; /* Swap gold for blue in this theme */
+  --color-accent-blue: #102A43;
+}
+
+/* Forest Theme (Teal) */
+[data-theme='forest'] {
+  --color-bg-primary: #F1F7F6;
+  --color-bg-secondary: #E1EBEA;
+  --color-bg-surface: #FFFFFF;
+  --color-border: rgba(12, 41, 39, 0.1);
+  --color-text-primary: #0C2927;
+  --color-text-secondary: #3E605E;
+  --color-text-tertiary: #719290;
+  --color-accent-gold: #1D9E75; /* Swap gold for teal */
+}
+
+/* Custom Utilities for Score Ring and other Design Details */
+@layer utilities {
+  .glass {
+    @apply bg-white/70 backdrop-blur-md border border-white/20;
+  }
+  
+  .shadow-soft {
+    box-shadow: 0 1px 4px rgba(0, 0, 0, 0.08);
+  }
+}

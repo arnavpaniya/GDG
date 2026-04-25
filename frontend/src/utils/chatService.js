@@ -1,0 +1,113 @@
+import { 
+  collection, 
+  addDoc, 
+  query, 
+  where, 
+  orderBy, 
+  onSnapshot, 
+  serverTimestamp,
+  doc,
+  deleteDoc,
+  getDocs,
+  writeBatch
+} from 'firebase/firestore';
+import { updateProfile } from 'firebase/auth';
+import { db, auth } from './firebase';
+
+/**
+ * Nyaya AI - Chat Firestore Service
+ * Handles persistence for analysis sessions.
+ */
+
+export const subscribeToChats = (userId, callback) => {
+  if (!userId) return () => {};
+  
+  const q = query(
+    collection(db, `users/${userId}/chats`),
+    orderBy('createdAt', 'desc')
+  );
+
+  return onSnapshot(q, (snapshot) => {
+    const chats = snapshot.docs.map(doc => ({
+      id: doc.id,
+      ...doc.data()
+    }));
+    callback(chats);
+  });
+};
+
+export const createNewChat = async (userId, title = 'New Analysis') => {
+  if (!userId) throw new Error('User ID required');
+  
+  const docRef = await addDoc(collection(db, `users/${userId}/chats`), {
+    title,
+    createdAt: serverTimestamp(),
+    messages: []
+  });
+  
+  return docRef.id;
+};
+
+export const deleteChat = async (userId, chatId) => {
+  if (!userId || !chatId) return;
+  await deleteDoc(doc(db, `users/${userId}/chats`, chatId));
+};
+
+export const subscribeToMessages = (userId, chatId, callback) => {
+  if (!userId || !chatId) return () => {};
+  
+  const q = query(
+    collection(db, `users/${userId}/chats/${chatId}/messages`),
+    orderBy('createdAt', 'asc')
+  );
+
+  return onSnapshot(q, (snapshot) => {
+    const messages = snapshot.docs.map(doc => ({
+      id: doc.id,
+      ...doc.data()
+    }));
+    callback(messages);
+  });
+};
+
+export const addMessage = async (userId, chatId, message) => {
+  if (!userId || !chatId) return;
+  
+  await addDoc(collection(db, `users/${userId}/chats/${chatId}/messages`), {
+    ...message,
+    createdAt: serverTimestamp()
+  });
+};
+
+export const updateChatMessages = async (userId, chatId, messages) => {
+  // Deprecated in favor of subcollections
+};
+
+export const clearAllHistory = async (userId) => {
+  if (!userId) return;
+  
+  const chatsQuery = query(collection(db, `users/${userId}/chats`));
+  const chatsSnapshot = await getDocs(chatsQuery);
+  
+  const batch = writeBatch(db);
+  
+  for (const chatDoc of chatsSnapshot.docs) {
+    // Delete messages subcollection
+    const messagesQuery = query(collection(db, `users/${userId}/chats/${chatDoc.id}/messages`));
+    const messagesSnapshot = await getDocs(messagesQuery);
+    messagesSnapshot.forEach((msgDoc) => {
+      batch.delete(msgDoc.ref);
+    });
+    
+    // Delete the chat itself
+    batch.delete(chatDoc.ref);
+  }
+  
+  await batch.commit();
+};
+
+export const updateUserProfile = async (displayName) => {
+  if (!auth.currentUser) return;
+  await updateProfile(auth.currentUser, { displayName });
+};
+
