@@ -23,7 +23,7 @@ export default function Login() {
       } else {
         await createUserWithEmailAndPassword(auth, email, password);
       }
-      router.push('/');
+      router.push('/app');
     } catch (err) {
       setError(err.message);
     }
@@ -32,7 +32,7 @@ export default function Login() {
   const handleGoogleSignIn = async () => {
     try {
       await signInWithPopup(auth, googleProvider);
-      router.push('/');
+      router.push('/app');
     } catch (err) {
       setError(err.message);
     }

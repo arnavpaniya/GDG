@@ -21,12 +21,37 @@ const jetbrains = JetBrains_Mono({
 });
 
 export const metadata = {
-  title: "Nyaya AI - Premium Legal Analysis",
-  description: "Advanced AI-powered legal analysis and fairness assessment platform.",
+  title: "Nyaya AI — Detect bias. Explain unfairness. Ship trustworthy AI.",
+  description:
+    "Nyaya AI is the immersive bias-detection platform. Score fairness 0–100, explain bias in plain English, compare models, and ship AI that stands up to scrutiny.",
   icons: {
-    icon: "/assets/logo.png",
+    icon: "/assets/favicon.png",
+    shortcut: "/assets/favicon.png",
+    apple: "/assets/favicon.png",
   },
 };
+
+// Apply persisted theme before paint to avoid flash
+const themeScript = `
+(function() {
+  try {
+    var t = localStorage.getItem('theme') || 'dark';
+    var root = document.documentElement;
+    root.classList.remove('dark');
+    root.removeAttribute('data-theme');
+    if (t === 'system') {
+      var d = window.matchMedia('(prefers-color-scheme: dark)').matches;
+      if (d) root.classList.add('dark');
+      root.setAttribute('data-theme', d ? 'dark' : 'light');
+    } else if (t === 'dark') {
+      root.classList.add('dark');
+      root.setAttribute('data-theme','dark');
+    } else {
+      root.setAttribute('data-theme', t);
+    }
+  } catch(e) {}
+})();
+`;
 
 export default function RootLayout({ children }) {
   return (
@@ -35,10 +60,11 @@ export default function RootLayout({ children }) {
       className={`${inter.variable} ${lora.variable} ${jetbrains.variable} h-full antialiased`}
       suppressHydrationWarning
     >
-      <body className="min-h-full flex flex-col bg-bg-primary text-text-primary transition-colors duration-200">
-        <AuthProvider>
-          {children}
-        </AuthProvider>
+      <head>
+        <script dangerouslySetInnerHTML={{ __html: themeScript }} />
+      </head>
+      <body className="min-h-full flex flex-col bg-bg-primary text-text-primary transition-colors duration-300">
+        <AuthProvider>{children}</AuthProvider>
       </body>
     </html>
   );

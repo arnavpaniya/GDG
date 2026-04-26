@@ -65,9 +65,9 @@ export default function AuthProvider({ children }) {
           setChats(chats);
         });
 
-        // Redirect from login if authenticated
+        // Redirect from login if authenticated → app
         if (pathname === "/login") {
-          router.push("/");
+          router.push("/app");
         }
       } else {
         setUser(null);
@@ -76,7 +76,9 @@ export default function AuthProvider({ children }) {
         
         // Redirect to login if not authenticated and not on public pages
         // Public pages include: / (landing), /login, /privacy, /terms
-        if (pathname !== "/" && pathname !== "/login" && pathname !== "/privacy" && pathname !== "/terms") {
+        // Public pages: /, /login, /privacy, /terms, /app (allows guest preview)
+        const publicPaths = ["/", "/login", "/privacy", "/terms", "/app"];
+        if (!publicPaths.includes(pathname)) {
           router.push("/login");
         }
       }

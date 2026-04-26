@@ -7,7 +7,7 @@ const useStore = create((set) => ({
   isSidebarOpen: true,
   messages: [],
   isSettingsOpen: false,
-  theme: typeof window !== 'undefined' ? localStorage.getItem('theme') || 'light' : 'light',
+  theme: typeof window !== 'undefined' ? localStorage.getItem('theme') || 'dark' : 'dark',
   
   // Actions
   setUser: (user) => set({ user }),
