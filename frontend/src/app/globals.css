@@ -145,6 +145,17 @@
     color: transparent;
   }
 
+  .text-gold-gradient-safe {
+    background: linear-gradient(135deg, #F5C238 0%, #E5B028 35%, #B8821A 100%);
+    -webkit-background-clip: text;
+    background-clip: text;
+    -webkit-text-fill-color: transparent;
+    color: transparent;
+    box-decoration-break: clone;
+    -webkit-box-decoration-break: clone;
+    padding-inline: 0.08em;
+  }
+
   /* Faint blueprint grid for hero backgrounds */
   .bg-grid {
     background-image:

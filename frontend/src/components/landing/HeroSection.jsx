@@ -69,14 +69,14 @@ export default function HeroSection() {
           initial="hidden"
           animate="show"
           variants={{ show: { transition: { staggerChildren: 0.08, delayChildren: 0.2 } } }}
-          className="font-serif text-[44px] sm:text-[64px] md:text-[88px] leading-[1.02] tracking-[-0.02em] text-text-primary max-w-5xl"
+          className="font-serif text-[44px] sm:text-[62px] md:text-[82px] leading-[1.14] tracking-[-0.015em] text-text-primary max-w-5xl overflow-visible px-2 sm:px-4 flex flex-wrap justify-center gap-x-2 sm:gap-x-3 md:gap-x-4 gap-y-2"
         >
           {headline.map((w, i) => (
             <motion.span
               key={i}
               variants={wordVar}
-              className={`inline-block mr-3 ${
-                w === t("hero.headline_3") ? "italic text-gold-gradient glow-text" : ""
+              className={`inline-block align-baseline leading-[1.12] py-[0.06em] ${
+                w === t("hero.headline_3") ? "italic text-gold-gradient-safe glow-text" : ""
               }`}
             >
               {w}
