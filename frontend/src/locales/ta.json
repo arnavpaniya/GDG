@@ -1,0 +1,114 @@
+{
+  "brand": {
+    "name": "Nyaya",
+    "nameWithAi": "Nyaya AI",
+    "tagline": "Justice in every decision",
+    "description": "Detect bias. Explain unfairness. Ship trustworthy AI."
+  },
+  "navbar": {
+    "features": "Features",
+    "why": "Why Nyaya",
+    "how": "How it works",
+    "outcomes": "Outcomes",
+    "launchApp": "Launch App"
+  },
+  "hero": {
+    "headline": ["Justice", "in every", "AI", "decision."],
+    "eyebrow": "Bias detection · Fairness scoring · Explainability",
+    "description": "Nyaya AI detects, measures and explains bias in your datasets and model outputs — so the systems you ship are fair, accountable, and ready for the real world.",
+    "ctaPrimary": "Try Nyaya AI free",
+    "ctaSecondary": "See how it works",
+    "trustFairness": "Fairness Score",
+    "trustApi": "API checks",
+    "trustExplanations": "Explanations",
+    "trustK1": "0–100",
+    "trustK2": "Real-time",
+    "trustK3": "Plain-English",
+    "scroll": "scroll"
+  },
+  "features": {
+    "title": "Everything you need to audit, explain and ship fair AI",
+    "biasDetectionTitle": "Bias Detection",
+    "biasDetectionBody": "Scan datasets and model outputs for hidden patterns of unfairness across protected attributes.",
+    "fairnessScoreTitle": "Fairness Score",
+    "fairnessScoreBody": "A clear 0–100 metric so anyone — engineer, PM, regulator — knows where you stand.",
+    "visualsTitle": "Interactive Visuals",
+    "visualsBody": "Dashboards and charts that make disparate impact, parity gaps and group rates obvious.",
+    "plainEnglishTitle": "Plain-English Reasons",
+    "plainEnglishBody": "We explain why bias appears, in human language — no statistics PhD required.",
+    "comparisonTitle": "Model Comparison",
+    "comparisonBody": "Pit GPT, Gemini, Claude and your own models side-by-side to see who is fairest.",
+    "attributeDetectionTitle": "Sensitive Attribute Detection",
+    "attributeDetectionBody": "Auto-identify gender, age, region, caste and other features driving the gap.",
+    "suggestionsTitle": "Actionable Suggestions",
+    "suggestionsBody": "Concrete next steps — reweighting, sampling, prompt fixes — to reduce bias measurably.",
+    "apiTitle": "Real-time API",
+    "apiBody": "Drop a single endpoint into your stack to bias-check every prediction at request time.",
+    "auditTitle": "Audit Reports",
+    "auditBody": "Export board-ready PDFs with executive summaries, technical depth, and stakeholder-friendly visuals."
+  },
+  "why": {
+    "title": "Why teams choose Nyaya",
+    "subtitle": "We built Nyaya because bias has costs."
+  },
+  "how": {
+    "title": "How it works",
+    "step1Num": "01",
+    "step1Title": "Bring your data or model",
+    "step1Body": "Upload a CSV dataset, paste model outputs, or connect via our API. Nyaya AI works with anything from a hiring spreadsheet to GPT-class responses.",
+    "step2Num": "02",
+    "step2Title": "Auto-detect sensitive attributes",
+    "step2Body": "We identify protected features (gender, age, region, caste, etc.) and the columns that drive decisions — no manual labelling needed.",
+    "step3Num": "03",
+    "step3Title": "Score, visualise, explain",
+    "step3Body": "Get a Fairness Score (0–100), interactive charts, and plain-English explanations of where bias lives — and why.",
+    "step4Num": "04",
+    "step4Title": "Fix and ship with confidence",
+    "step4Body": "Receive concrete remediation steps, export a PDF audit report, and plug a real-time check into your stack."
+  },
+  "outcomes": {
+    "title": "Proven impact",
+    "stat1Label": "of bias detected before deployment",
+    "stat2Label": "faster fairness audits",
+    "stat3Label": "attributes auto-analysed",
+    "stat4Label": "PhD required to read the report",
+    "useCaseHiring": "Hiring & HR",
+    "useCaseHiringBody": "Catch gender or age bias in resume screeners before a single applicant is rejected.",
+    "useCaseLending": "Lending & Credit",
+    "useCaseLendingBody": "Verify your scoring model treats applicants fairly across regions and demographics.",
+    "useCaseHealthcare": "Healthcare AI",
+    "useCaseHealthcareBody": "Audit triage and diagnostic models so care isn't allocated unequally.",
+    "useCasePublic": "Public-sector Decisions",
+    "useCasePublicBody": "Bring transparency to AI-assisted policy and benefit allocation.",
+    "useCaseEdtech": "EdTech & Admissions",
+    "useCaseEdtechBody": "Make sure recommendation and admission models open doors instead of closing them.",
+    "useCaseLLM": "LLM Deployments",
+    "useCaseLLMBody": "Compare GPT, Gemini and Claude responses for harmful or biased patterns at scale."
+  },
+  "cta": {
+    "title": "Make your AI fair, accountable, transparent.",
+    "subtitle": "Join teams at startups, enterprises and nonprofits using Nyaya to ship with confidence.",
+    "button": "Start auditing for free"
+  },
+  "footer": {
+    "tagline": "Justice in every decision.",
+    "legal": "Legal",
+    "privacy": "Privacy Policy",
+    "terms": "Terms of Service",
+    "copyright": "© 2024 Nyaya. All rights reserved."
+  },
+  "errors": {
+    "notFoundTitle": "This decision has no precedent.",
+    "notFoundBody": "The page you're looking for doesn't exist — or it never did. Let's get you back to something fair and known.",
+    "notFoundHome": "Back to home",
+    "notFoundApp": "Open the app",
+    "offTheRecord": "Off the record"
+  },
+  "loading": {
+    "text": "Loading"
+  },
+  "settings": {
+    "language": "Language",
+    "theme": "Theme"
+  }
+}

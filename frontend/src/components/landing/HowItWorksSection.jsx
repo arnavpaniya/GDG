@@ -58,70 +58,60 @@ export default function HowItWorksSection() {
           />
 
           <div className="space-y-16 md:space-y-24">
-            {items.map((s, i) => {
-              const Icon = ICONS[i] || Upload;
-              const num = String(i + 1).padStart(2, "0");
-              // Even (i=0,2): text on LEFT (text-right), visual on RIGHT
-              // Odd  (i=1,3): visual on LEFT, text on RIGHT (text-left)
-              const isOdd = i % 2 === 1;
-
-              const TextBlock = (
-                <div className={`${isOdd ? "md:text-left" : "md:text-right"}`}>
-                  <div className="inline-flex items-center gap-3 mb-4">
-                    <span className="font-mono text-xs text-accent-gold tracking-[0.2em]">
-                      {t("how.stepLabel")} {num}
-                    </span>
-                    <span className="h-px w-10 bg-accent-gold/40" />
-                  </div>
-                  <h3 className="font-serif text-2xl md:text-4xl text-text-primary mb-3 leading-tight">
-                    {s.title}
-                  </h3>
-                  <p className="text-text-secondary leading-relaxed max-w-md md:inline-block">
-                    {s.body}
-                  </p>
-                </div>
-              );
-
-              const VisualBlock = (
-                <div className="hidden md:block">
-                  <div className={`relative ${isOdd ? "" : "md:ml-auto"}`}>
-                    <div className="w-full max-w-sm aspect-[4/3] rounded-2xl border border-border bg-bg-surface/40 backdrop-blur-md p-8 flex items-center justify-center overflow-hidden relative group">
-                      <span className="absolute -top-16 -right-16 w-48 h-48 bg-accent-gold/10 blur-3xl rounded-full" />
-                      <Icon size={88} strokeWidth={1.2} className="text-accent-gold relative z-10 group-hover:scale-110 transition-transform duration-700" />
-                      <span className="absolute bottom-4 right-5 font-mono text-[10px] uppercase tracking-[0.3em] text-text-tertiary">
-                        {num} / 04
-                      </span>
-                    </div>
-                  </div>
-                </div>
-              );
-
+            {STEPS.map((s, i) => {
+              const Icon = s.icon;
+              const isRight = i % 2 === 1;
               return (
                 <motion.div
-                  key={i}
+                  key={s.num}
                   initial={{ opacity: 0, y: 30 }}
                   whileInView={{ opacity: 1, y: 0 }}
                   viewport={{ once: true, margin: "-100px" }}
                   transition={{ duration: 0.6, ease: [0.22, 1, 0.36, 1] }}
-                  className="relative grid grid-cols-1 md:grid-cols-2 md:gap-12 items-center"
+                  className={`relative grid grid-cols-[56px_1fr] md:grid-cols-2 md:gap-12 items-center ${
+                    isRight ? "" : ""
+                  }`}
                   data-testid={`how-step-${i}`}
                 >
-                  {/* Center node dot — absolutely positioned, doesn't take grid cells */}
+                  {/* Node dot */}
                   <div className="absolute left-[20px] md:left-1/2 md:-translate-x-1/2 top-2 z-10">
                     <span className="block w-4 h-4 rounded-full bg-accent-gold shadow-[0_0_24px_var(--color-accent-gold)] animate-pulse-ring" />
                   </div>
 
-                  {!isOdd ? (
-                    <>
-                      <div className="pl-12 md:pl-0 md:pr-12">{TextBlock}</div>
-                      <div className="md:pl-12">{VisualBlock}</div>
-                    </>
-                  ) : (
-                    <>
-                      <div className="md:pr-12">{VisualBlock}</div>
-                      <div className="pl-12 md:pl-12 md:pr-0">{TextBlock}</div>
-                    </>
-                  )}
+                  {/* Spacer for left items on desktop */}
+                  {isRight && <div className="hidden md:block" />}
+
+                  {/* Card */}
+                  <div className={`pl-12 md:pl-0 ${isRight ? "md:pl-12" : "md:pr-12 md:text-right"}`}>
+                    <div className="inline-flex items-center gap-3 mb-4">
+                      <span className="font-mono text-xs text-accent-gold tracking-[0.2em]">
+                        STEP {s.num}
+                      </span>
+                      <span className="h-px w-10 bg-accent-gold/40" />
+                    </div>
+                    <h3 className="font-serif text-2xl md:text-4xl text-text-primary mb-3 leading-tight">
+                      {s.title}
+                    </h3>
+                    <p className="text-text-secondary leading-relaxed max-w-md md:inline-block">
+                      {s.body}
+                    </p>
+                  </div>
+
+                  {/* Visual side */}
+                  <div className={`hidden md:block ${isRight ? "md:order-first md:pr-12" : "md:pl-12"}`}>
+                    <div className={`relative ${isRight ? "md:ml-auto" : ""}`}>
+                      <div className="w-full max-w-sm aspect-[4/3] rounded-2xl border border-border bg-bg-surface/40 backdrop-blur-md p-8 flex items-center justify-center overflow-hidden relative group">
+                        <span className="absolute -top-16 -right-16 w-48 h-48 bg-accent-gold/10 blur-3xl rounded-full" />
+                        <Icon size={88} strokeWidth={1.2} className="text-accent-gold relative z-10 group-hover:scale-110 transition-transform duration-700" />
+                        <span className="absolute bottom-4 right-5 font-mono text-[10px] uppercase tracking-[0.3em] text-text-tertiary">
+                          {s.num} / 04
+                        </span>
+                      </div>
+                    </div>
+                  </div>
+
+                  {/* Spacer for right items */}
+                  {!isRight && <div className="hidden md:block" />}
                 </motion.div>
               );
             })}

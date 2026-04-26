@@ -68,11 +68,11 @@ export default function Navbar() {
           </div>
           <ThemeToggle />
           <Link
-            href="/app"
-            data-testid="nav-launch-app"
+            href="/login"
+            data-testid="nav-sign-in"
             className="hidden md:inline-flex items-center gap-1.5 bg-accent-gold text-[#0a0a08] hover:brightness-110 active:scale-[0.98] px-4 py-2 rounded-pill text-sm font-semibold transition-all shadow-glow-gold"
           >
-            {t("nav.launchApp")}
+            Launch App
             <ArrowUpRight size={15} strokeWidth={2.5} />
           </Link>
           <button
@@ -108,11 +108,10 @@ export default function Navbar() {
             </div>
             <Link
               href="/app"
-              onClick={() => setOpen(false)}
               className="mt-3 inline-flex items-center justify-center gap-1.5 bg-accent-gold text-[#0a0a08] px-4 py-2.5 rounded-pill text-sm font-semibold"
-              data-testid="nav-launch-app-mobile"
+              data-testid="nav-sign-in-mobile"
             >
-              {t("nav.launchApp")} <ArrowUpRight size={15} strokeWidth={2.5} />
+              Launch App <ArrowUpRight size={15} strokeWidth={2.5} />
             </Link>
           </div>
         </motion.div>
