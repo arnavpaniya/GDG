@@ -3,22 +3,16 @@
 import { motion, useInView, useMotionValue, animate } from "framer-motion";
 import { useRef, useEffect, useState } from "react";
 import { Briefcase, HeartPulse, Scale, GraduationCap, Building2, Banknote } from "lucide-react";
+import { useI18n } from "@/lib/i18n/I18nProvider";
 
-const STATS = [
-  { value: 80, suffix: "%", label: "of bias detected before deployment" },
-  { value: 10, suffix: "x", label: "faster fairness audits" },
-  { value: 100, suffix: "+", label: "attributes auto-analysed" },
-  { value: 0, suffix: "", label: "PhD required to read the report" },
+const STAT_VALUES = [
+  { value: 80, suffix: "%" },
+  { value: 10, suffix: "x" },
+  { value: 100, suffix: "+" },
+  { value: 0, suffix: "" },
 ];
 
-const USE_CASES = [
-  { icon: Briefcase, title: "Hiring & HR", body: "Catch gender or age bias in resume screeners before a single applicant is rejected." },
-  { icon: Banknote, title: "Lending & Credit", body: "Verify your scoring model treats applicants fairly across regions and demographics." },
-  { icon: HeartPulse, title: "Healthcare AI", body: "Audit triage and diagnostic models so care isn't allocated unequally." },
-  { icon: Scale, title: "Public-sector Decisions", body: "Bring transparency to AI-assisted policy and benefit allocation." },
-  { icon: GraduationCap, title: "EdTech & Admissions", body: "Make sure recommendation and admission models open doors instead of closing them." },
-  { icon: Building2, title: "LLM Deployments", body: "Compare GPT, Gemini and Claude responses for harmful or biased patterns at scale." },
-];
+const ICONS = [Briefcase, Banknote, HeartPulse, Scale, GraduationCap, Building2];
 
 function Counter({ to, suffix }) {
   const ref = useRef(null);
@@ -45,46 +39,32 @@ function Counter({ to, suffix }) {
 }
 
 export default function OutcomesSection() {
+  const { t, dict } = useI18n();
+  const stats = dict.outcomes.stats;
+  const useCases = dict.outcomes.useCases;
+
   return (
     <section id="outcomes" className="relative py-28 md:py-40 overflow-hidden">
       <div className="absolute inset-0 bg-radial-gold opacity-25 pointer-events-none" />
 
       <div className="max-w-[1280px] mx-auto px-6 md:px-10 relative">
-        {/* Heading */}
         <div className="grid md:grid-cols-12 gap-8 mb-20">
-          <motion.div
-            initial={{ opacity: 0, y: 20 }}
-            whileInView={{ opacity: 1, y: 0 }}
-            viewport={{ once: true }}
-            transition={{ duration: 0.6 }}
-            className="md:col-span-7"
-          >
-            <p className="text-[11px] tracking-[0.3em] uppercase font-mono text-accent-gold mb-4">
-              / what you can achieve
-            </p>
+          <motion.div initial={{ opacity: 0, y: 20 }} whileInView={{ opacity: 1, y: 0 }} viewport={{ once: true }} transition={{ duration: 0.6 }} className="md:col-span-7">
+            <p className="text-[11px] tracking-[0.3em] uppercase font-mono text-accent-gold mb-4">{t("outcomes.eyebrow")}</p>
             <h2 className="font-serif text-4xl md:text-6xl leading-[1.05] tracking-[-0.02em] text-text-primary">
-              Outcomes that <span className="italic text-gold-gradient">stand up</span>
+              {t("outcomes.title1")}{" "}
+              <span className="italic text-gold-gradient">{t("outcomes.title1highlight")}</span>
               <br />
-              to scrutiny.
+              {t("outcomes.title2")}
             </h2>
           </motion.div>
-          <motion.div
-            initial={{ opacity: 0, y: 20 }}
-            whileInView={{ opacity: 1, y: 0 }}
-            viewport={{ once: true }}
-            transition={{ duration: 0.6, delay: 0.1 }}
-            className="md:col-span-5 md:col-start-8 flex items-end"
-          >
-            <p className="text-text-secondary leading-relaxed text-lg">
-              From a single dataset upload to a board-ready audit, Nyaya AI shortens the
-              path between &ldquo;we should check this&rdquo; and &ldquo;we proved it&rsquo;s fair.&rdquo;
-            </p>
+          <motion.div initial={{ opacity: 0, y: 20 }} whileInView={{ opacity: 1, y: 0 }} viewport={{ once: true }} transition={{ duration: 0.6, delay: 0.1 }} className="md:col-span-5 md:col-start-8 flex items-end">
+            <p className="text-text-secondary leading-relaxed text-lg">{t("outcomes.subtitle")}</p>
           </motion.div>
         </div>
 
-        {/* Stat strip */}
         <div className="grid grid-cols-2 md:grid-cols-4 gap-px rounded-2xl overflow-hidden border border-border bg-border mb-24">
-          {STATS.map((s, i) => (
+          {stats.map((s, i) => (
             <motion.div
               key={i}
               initial={{ opacity: 0 }}
@@ -94,34 +74,27 @@ export default function OutcomesSection() {
               className="bg-bg-surface/60 backdrop-blur-md p-8 md:p-10 flex flex-col gap-3"
               data-testid={`outcome-stat-${i}`}
             >
-              <Counter to={s.value} suffix={s.suffix} />
+              <Counter to={STAT_VALUES[i].value} suffix={STAT_VALUES[i].suffix} />
               <span className="text-sm text-text-secondary leading-snug">{s.label}</span>
             </motion.div>
           ))}
         </div>
 
-        {/* Use case cards */}
         <div className="mb-12">
-          <motion.h3
-            initial={{ opacity: 0, y: 12 }}
-            whileInView={{ opacity: 1, y: 0 }}
-            viewport={{ once: true }}
-            transition={{ duration: 0.5 }}
-            className="font-serif text-2xl md:text-3xl text-text-primary mb-2"
-          >
-            Built for every team that ships decisions.
+          <motion.h3 initial={{ opacity: 0, y: 12 }} whileInView={{ opacity: 1, y: 0 }} viewport={{ once: true }} transition={{ duration: 0.5 }} className="font-serif text-2xl md:text-3xl text-text-primary mb-2">
+            {t("outcomes.builtFor")}
           </motion.h3>
           <p className="text-text-tertiary text-sm uppercase tracking-[0.2em] font-mono">
-            / use cases
+            {t("outcomes.useCasesLabel")}
           </p>
         </div>
 
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-5">
-          {USE_CASES.map((u, i) => {
-            const Icon = u.icon;
+          {useCases.map((u, i) => {
+            const Icon = ICONS[i] || Briefcase;
             return (
               <motion.div
-                key={u.title}
+                key={i}
                 initial={{ opacity: 0, y: 24 }}
                 whileInView={{ opacity: 1, y: 0 }}
                 viewport={{ once: true, margin: "-50px" }}
