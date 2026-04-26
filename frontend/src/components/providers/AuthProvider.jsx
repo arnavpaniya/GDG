@@ -6,6 +6,7 @@ import { auth } from "@/utils/firebase";
 import { subscribeToChats } from "@/utils/chatService";
 import useStore from "@/store/useStore";
 import SettingsModal from "@/components/layout/SettingsModal";
+import Preloader from "@/components/landing/Preloader";
 import { useRouter, usePathname } from "next/navigation";
 
 export default function AuthProvider({ children }) {
@@ -73,14 +74,9 @@ export default function AuthProvider({ children }) {
         setUser(null);
         setChats([]);
         unsubscribeChats();
-        
-        // Redirect to login if not authenticated and not on public pages
-        // Public pages include: / (landing), /login, /privacy, /terms
-        // Public pages: /, /login, /privacy, /terms, /app (allows guest preview)
-        const publicPaths = ["/", "/login", "/privacy", "/terms", "/app"];
-        if (!publicPaths.includes(pathname)) {
-          router.push("/login");
-        }
+
+        // No global redirect-to-login. Truly protected actions handle their
+        // own gating, and removing this lets not-found.js render properly.
       }
       setLoading(false);
     });
@@ -92,15 +88,12 @@ export default function AuthProvider({ children }) {
   }, [setUser, setChats, router, pathname]);
 
   if (loading) {
-    return (
-      <div className="h-screen w-full bg-bg-primary flex items-center justify-center">
-        <img src="/assets/logo-mark.png" alt="Loading..." className="w-16 h-16 animate-pulse" />
-      </div>
-    );
+    return <Preloader />;
   }
 
   return (
     <>
+      <Preloader />
       <SettingsModal isOpen={isSettingsOpen} onClose={() => setSettingsOpen(false)} />
       {children}
     </>
