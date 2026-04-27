@@ -7,7 +7,7 @@ import ChatWindow from '@/components/chat/ChatWindow';
 import { subscribeToMessages, addMessage, createNewChat } from '@/utils/chatService';
 import { useRouter } from 'next/navigation';
 import { analyzeCSV } from '@/utils/fileAnalysis';
-import { uploadAndAnalyze, formatAnalysisForChat, generateAnalysisSummary } from '@/utils/apiService';
+import { uploadAndAnalyze, formatAnalysisForChat, generateAnalysisSummary, sendChatMessage } from '@/utils/apiService';
 
 export default function AppHome() {
   const router = useRouter();
@@ -30,9 +30,19 @@ export default function AppHome() {
 
     if (!user) {
       setCurrentChatId('guest-session');
-      setMessages([
-        { id: 'guest-msg-1', role: 'user', content: text, createdAt: new Date() }
-      ]);
+      const newUserMsg = { id: `guest-msg-${Date.now()}`, role: 'user', content: text, createdAt: new Date() };
+      setMessages((prev) => [...prev, newUserMsg]);
+      setIsLoading(true);
+      try {
+        const response = await sendChatMessage(text, null);
+        const assistantMsg = { id: `guest-msg-reply-${Date.now()}`, role: 'assistant', content: response.data.text, createdAt: new Date() };
+        setMessages((prev) => [...prev, assistantMsg]);
+      } catch (err) {
+        console.error("Chat error:", err);
+        setMessages((prev) => [...prev, { id: `guest-msg-err-${Date.now()}`, role: 'assistant', content: '❌ Sorry, I encountered an error processing your request.', createdAt: new Date() }]);
+      } finally {
+        setIsLoading(false);
+      }
       return;
     }
 
@@ -43,13 +53,32 @@ export default function AppHome() {
     }
 
     await addMessage(user.uid, chatId, { role: 'user', content: text });
+    setIsLoading(true);
 
-    setTimeout(async () => {
+    try {
+      // Find the last analysis result in the chat history to pass as context
+      let context = null;
+      for (let i = messages.length - 1; i >= 0; i--) {
+         if (messages[i].analysis) {
+           context = messages[i].analysis;
+           break;
+         }
+      }
+
+      const response = await sendChatMessage(text, context);
       await addMessage(user.uid, chatId, {
         role: 'assistant',
-        content: `I'm analyzing your request: "${text}". How would you like me to proceed with the fairness check?`
+        content: response.data.text
       });
-    }, 1000);
+    } catch (err) {
+      console.error("Chat error:", err);
+      await addMessage(user.uid, chatId, {
+        role: 'assistant',
+        content: '❌ Sorry, I encountered an error. Please try again later.'
+      });
+    } finally {
+      setIsLoading(false);
+    }
   };
 
   const handleFileUpload = async (file) => {

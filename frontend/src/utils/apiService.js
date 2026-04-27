@@ -136,6 +136,19 @@ export async function analyzeBuiltinDataset({ dataset = 'biased', mitigation = '
 }
 
 /**
+ * Send a chat message to the Gemini-powered backend API
+ * @param {string} message - The user's message
+ * @param {Object} context - Optional context about current dataset/analysis
+ * @returns {Promise} Response from Gemini
+ */
+export async function sendChatMessage(message, context = null) {
+  return apiFetch('/chat', {
+    method: 'POST',
+    body: JSON.stringify({ message, context }),
+  });
+}
+
+/**
  * Format analysis results for chat display
  */
 export function formatAnalysisForChat(apiResponse) {
@@ -264,6 +277,7 @@ export default {
   uploadAndAnalyze,
   runMLAnalysis,
   analyzeBuiltinDataset,
+  sendChatMessage,
   formatAnalysisForChat,
   generateAnalysisSummary,
   APIError,

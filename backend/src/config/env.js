@@ -14,4 +14,5 @@ module.exports = {
   MAX_FILE_SIZE_MB:   parseInt(process.env.MAX_FILE_SIZE_MB || "10", 10),
   ALLOWED_ORIGINS:    (process.env.ALLOWED_ORIGINS   || "http://localhost:3000")
                         .split(",").map((o) => o.trim()),
+  GEMINI_API_KEY:     process.env.GEMINI_API_KEY     || "",
 };

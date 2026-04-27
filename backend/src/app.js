@@ -18,6 +18,7 @@ const { ALLOWED_ORIGINS, NODE_ENV } = require("./config/env");
 
 // Routes
 const analysisRoutes = require("./routes/analysisRoutes");
+const chatRoutes     = require("./routes/chatRoutes");
 
 const app = express();
 
@@ -48,6 +49,7 @@ app.get("/", (req, res) =>
 
 // ── API routes ────────────────────────────────────────────────────────────── //
 app.use("/api/v1", analysisRoutes);
+app.use("/api/v1/chat", chatRoutes);
 
 // ── 404 handler ───────────────────────────────────────────────────────────── //
 app.use((req, res) => {
