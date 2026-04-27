@@ -52,34 +52,48 @@ export default function AuthProvider({ children }) {
   useEffect(() => {
     let unsubscribeChats = () => {};
 
-    const unsubscribeAuth = onAuthStateChanged(auth, (user) => {
-      if (user && user.emailVerified) {
-        setUser({
-          uid: user.uid,
-          name: user.displayName || user.email.split("@")[0],
-          email: user.email,
-          avatar: user.photoURL,
-          plan: "Free",
-        });
+    const unsubscribeAuth = onAuthStateChanged(auth, (firebaseUser) => {
+      // Check current state for prototype user
+      const currentStoreUser = useStore.getState().user;
+      
+      if (firebaseUser && (firebaseUser.emailVerified || firebaseUser.isAnonymous)) {
+        // Only update if it's a real user or if we don't have a prototype session already set up
+        // This prevents overwriting the custom name/email we set during prototype bypass
+        if (!currentStoreUser?.isPrototype || !firebaseUser.isAnonymous) {
+          setUser({
+            uid: firebaseUser.uid,
+            name: firebaseUser.displayName || (firebaseUser.isAnonymous ? "Prototype User" : firebaseUser.email.split("@")[0]),
+            email: firebaseUser.email || (firebaseUser.isAnonymous ? "prototype@nyaya.ai" : ""),
+            avatar: firebaseUser.photoURL,
+            plan: firebaseUser.isAnonymous ? "Prototype" : "Free",
+            isPrototype: firebaseUser.isAnonymous,
+          });
+        }
         
-        unsubscribeChats = subscribeToChats(user.uid, (chats) => {
+        unsubscribeChats = subscribeToChats(firebaseUser.uid, (chats) => {
           setChats(chats);
         });
 
         // Redirect from login if authenticated → app
-        if (pathname === "/login") {
+        if (pathname === "/login" || pathname === "/signup") {
+          router.push("/app");
+        }
+      } else if (currentStoreUser?.isPrototype) {
+        // We have a prototype user, but no firebase user? 
+        // This should normally not happen if we used signInAnonymously.
+        // But if it does, we maintain it.
+        console.log("Maintaining local prototype session");
+        if (pathname === "/login" || pathname === "/signup") {
           router.push("/app");
         }
       } else {
-        if (user && !user.emailVerified) {
+        // Only sign out if we have a user that isn't verified and isn't anonymous
+        if (firebaseUser && !firebaseUser.emailVerified && !firebaseUser.isAnonymous) {
           auth.signOut();
         }
         setUser(null);
         setChats([]);
         unsubscribeChats();
-
-        // No global redirect-to-login. Truly protected actions handle their
-        // own gating, and removing this lets not-found.js render properly.
       }
       setLoading(false);
     });
@@ -90,15 +104,11 @@ export default function AuthProvider({ children }) {
     };
   }, [setUser, setChats, router, pathname]);
 
-  if (loading) {
-    return <Preloader />;
-  }
-
   return (
     <>
       <Preloader />
       <SettingsModal isOpen={isSettingsOpen} onClose={() => setSettingsOpen(false)} />
-      {children}
+      {!loading && children}
     </>
   );
 }

@@ -66,7 +66,7 @@ export default function Navbar() {
       data-testid="landing-navbar"
     >
       <div className="max-w-[1280px] mx-auto px-6 md:px-10 h-[68px] flex items-center justify-between gap-3">
-        <Link href="/" className="flex items-center gap-3 group shrink-0" data-testid="nav-brand">
+        <Link href="/" className="flex items-center gap-2 group shrink-0" data-testid="nav-brand">
           <span className="relative flex items-center justify-center">
             <img src="/assets/logo-mark.png" alt="" className="h-9 w-auto object-contain" />
             <span className="absolute inset-0 rounded-md bg-accent-gold/20 blur-md opacity-0 group-hover:opacity-100 transition-opacity" />

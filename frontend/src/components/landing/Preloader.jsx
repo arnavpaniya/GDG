@@ -183,7 +183,7 @@ export default function Preloader() {
             </div>
 
             {/* Wordmark — visible immediately */}
-            <div className="mt-8 flex flex-col items-center gap-3">
+            <div className="mt-6 flex flex-col items-center gap-2">
               <span
                 className="text-2xl tracking-[0.05em] text-text-primary"
                 style={{ fontFamily: "Lora, Georgia, 'Times New Roman', serif" }}

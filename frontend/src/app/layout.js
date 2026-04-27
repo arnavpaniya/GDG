@@ -64,7 +64,10 @@ export default function RootLayout({ children }) {
       <head>
         <script dangerouslySetInnerHTML={{ __html: themeScript }} />
       </head>
-      <body className="min-h-full flex flex-col bg-bg-primary text-text-primary transition-colors duration-300">
+      <body 
+        className="min-h-full flex flex-col bg-bg-primary text-text-primary transition-colors duration-300"
+        suppressHydrationWarning
+      >
         <I18nProvider>
           <AuthProvider>{children}</AuthProvider>
         </I18nProvider>
