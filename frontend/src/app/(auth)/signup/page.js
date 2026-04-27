@@ -5,13 +5,14 @@ import { auth, googleProvider } from '@/utils/firebase';
 import { createUserWithEmailAndPassword, signInWithPopup, updateProfile, sendEmailVerification, signOut } from 'firebase/auth';
 import { useRouter } from 'next/navigation';
 import Link from 'next/link';
-import { Mail, Lock, User, ArrowRight, Loader2 } from 'lucide-react';
+import { Mail, Lock, User, ArrowRight, Loader2, Eye, EyeOff } from 'lucide-react';
 import { motion } from 'framer-motion';
 
 export default function Signup() {
   const [name, setName] = useState('');
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
+  const [showPassword, setShowPassword] = useState(false);
   const [error, setError] = useState('');
   const [loading, setLoading] = useState(false);
   const [verificationSent, setVerificationSent] = useState(false);
@@ -49,7 +50,7 @@ export default function Signup() {
       router.push('/app');
     } catch (err) {
       if (err.code !== 'auth/popup-closed-by-user') {
-        setError("Failed to sign up with Google.");
+        setError(err.message);
       }
     }
   };
@@ -157,14 +158,21 @@ export default function Signup() {
           <div className="relative">
             <Lock size={18} className="absolute left-3 top-1/2 -translate-y-1/2 text-text-tertiary" />
             <input 
-              type="password" 
+              type={showPassword ? "text" : "password"} 
               value={password}
               onChange={(e) => setPassword(e.target.value)}
               placeholder="Create a strong password" 
-              className="w-full bg-bg-primary border border-border rounded-input py-2.5 pl-10 pr-3 text-sm focus:outline-none focus:border-accent-gold focus:ring-1 focus:ring-accent-gold/30 transition-fast"
+              className="w-full bg-bg-primary border border-border rounded-input py-2.5 pl-10 pr-10 text-sm focus:outline-none focus:border-accent-gold focus:ring-1 focus:ring-accent-gold/30 transition-fast"
               required
               minLength={6}
             />
+            <button
+              type="button"
+              onClick={() => setShowPassword(!showPassword)}
+              className="absolute right-3 top-1/2 -translate-y-1/2 text-text-tertiary hover:text-text-secondary transition-fast"
+            >
+              {showPassword ? <EyeOff size={18} /> : <Eye size={18} />}
+            </button>
           </div>
         </div>
 

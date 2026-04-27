@@ -75,7 +75,7 @@ export default function HeroSection() {
             <motion.span
               key={i}
               variants={wordVar}
-              className={`inline-block align-baseline leading-[1.12] py-[0.06em] ${
+              className={`inline-block align-baseline leading-[1.12] py-[0.06em] px-[0.04em] ${
                 w === t("hero.headline_3") ? "italic text-gold-gradient-safe glow-text" : ""
               }`}
             >

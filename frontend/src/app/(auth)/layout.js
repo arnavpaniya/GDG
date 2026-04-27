@@ -18,7 +18,7 @@ export default function AuthLayout({ children }) {
         {/* Content */}
         <div className="relative z-10">
           <Link href="/" className="flex items-center gap-3">
-            <img src="/assets/logo-mark.png" alt="Nyaya AI" className="w-8 h-8" />
+            <img src="/assets/logo-mark.png" alt="Nyaya AI" className="h-8 w-auto object-contain" />
             <span className="text-xl font-serif font-bold text-text-primary tracking-tight">Nyaya AI</span>
           </Link>
         </div>
@@ -48,7 +48,7 @@ export default function AuthLayout({ children }) {
         {/* Mobile Logo - Only visible on small screens */}
         <div className="absolute top-6 left-6 lg:hidden">
           <Link href="/" className="flex items-center gap-2">
-            <img src="/assets/logo-mark.png" alt="Nyaya AI" className="w-6 h-6" />
+            <img src="/assets/logo-mark.png" alt="Nyaya AI" className="h-6 w-auto object-contain" />
             <span className="text-lg font-serif font-bold text-text-primary">Nyaya AI</span>
           </Link>
         </div>

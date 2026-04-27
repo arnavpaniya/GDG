@@ -52,7 +52,7 @@ const en = {
       { title: "Actionable Suggestions", body: "Concrete next steps — reweighting, sampling, prompt fixes — to reduce bias measurably." },
       { title: "Real-time API", body: "Drop a single endpoint into your stack to bias-check every prediction at request time." },
       { title: "PDF Reports", body: "Generate audit-ready reports for compliance, leadership and external partners." },
-      { title: "Ethical by Design", body: "Built around transparency and accountability — the foundation of trustworthy AI." },
+      { title: "Multilingual Support", body: "Built for India — audit models and datasets across 10 prominent Indian languages seamlessly." },
     ],
   },
 

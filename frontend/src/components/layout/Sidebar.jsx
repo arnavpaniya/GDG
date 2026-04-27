@@ -51,7 +51,7 @@ const Sidebar = () => {
       <div className="p-4 flex flex-col gap-3">
         <div className="flex items-center justify-between px-1">
           <div className="flex items-center gap-2">
-            <img src="/assets/logo-mark.png" alt="Nyaya AI" className="w-7 h-7" />
+            <img src="/assets/logo-mark.png" alt="Nyaya AI" className="h-7 w-auto object-contain" />
             <h1 className="text-lg font-semibold text-text-primary">Nyaya AI</h1>
           </div>
           <button 
