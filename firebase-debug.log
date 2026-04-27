@@ -1,0 +1,73 @@
+[debug] [2026-04-27T17:03:21.893Z] ----------------------------------------------------------------------
+[debug] [2026-04-27T17:03:21.895Z] Command:       /opt/homebrew/Cellar/node/25.2.1/bin/node /opt/homebrew/bin/firebase deploy --only hosting
+[debug] [2026-04-27T17:03:21.895Z] CLI Version:   15.14.0
+[debug] [2026-04-27T17:03:21.895Z] Platform:      darwin
+[debug] [2026-04-27T17:03:21.895Z] Node Version:  v25.2.1
+[debug] [2026-04-27T17:03:21.895Z] Time:          Mon Apr 27 2026 22:33:21 GMT+0530 (India Standard Time)
+[debug] [2026-04-27T17:03:21.895Z] ----------------------------------------------------------------------
+[debug] 
+[debug] [2026-04-27T17:03:22.719Z] > command requires scopes: ["email","openid","https://www.googleapis.com/auth/cloudplatformprojects.readonly","https://www.googleapis.com/auth/firebase","https://www.googleapis.com/auth/cloud-platform"]
+[debug] [2026-04-27T17:03:22.719Z] > authorizing via signed-in user (arnavpaniya@gmail.com)
+[debug] [2026-04-27T17:03:22.720Z] [iam] checking project nyaya-ai-hackathon-2026 for permissions ["firebase.projects.get","firebasehosting.sites.update"]
+[debug] [2026-04-27T17:03:22.720Z] Checked if tokens are valid: true, expires at: 1777311153709
+[debug] [2026-04-27T17:03:22.720Z] Checked if tokens are valid: true, expires at: 1777311153709
+[debug] [2026-04-27T17:03:22.721Z] >>> [apiv2][query] POST https://cloudresourcemanager.googleapis.com/v1/projects/nyaya-ai-hackathon-2026:testIamPermissions [none]
+[debug] [2026-04-27T17:03:22.721Z] >>> [apiv2][(partial)header] POST https://cloudresourcemanager.googleapis.com/v1/projects/nyaya-ai-hackathon-2026:testIamPermissions  x-goog-user-project=nyaya-ai-hackathon-2026
+[debug] [2026-04-27T17:03:22.721Z] >>> [apiv2][body] POST https://cloudresourcemanager.googleapis.com/v1/projects/nyaya-ai-hackathon-2026:testIamPermissions {"permissions":["firebase.projects.get","firebasehosting.sites.update"]}
+[debug] [2026-04-27T17:03:23.268Z] <<< [apiv2][status] POST https://cloudresourcemanager.googleapis.com/v1/projects/nyaya-ai-hackathon-2026:testIamPermissions 200
+[debug] [2026-04-27T17:03:23.268Z] <<< [apiv2][body] POST https://cloudresourcemanager.googleapis.com/v1/projects/nyaya-ai-hackathon-2026:testIamPermissions {"permissions":["firebase.projects.get","firebasehosting.sites.update"]}
+[debug] [2026-04-27T17:03:23.269Z] Checked if tokens are valid: true, expires at: 1777311153709
+[debug] [2026-04-27T17:03:23.269Z] Checked if tokens are valid: true, expires at: 1777311153709
+[debug] [2026-04-27T17:03:23.270Z] >>> [apiv2][query] GET https://firebase.googleapis.com/v1beta1/projects/nyaya-ai-hackathon-2026 [none]
+[debug] [2026-04-27T17:03:23.986Z] <<< [apiv2][status] GET https://firebase.googleapis.com/v1beta1/projects/nyaya-ai-hackathon-2026 200
+[debug] [2026-04-27T17:03:23.987Z] <<< [apiv2][body] GET https://firebase.googleapis.com/v1beta1/projects/nyaya-ai-hackathon-2026 {"projectId":"nyaya-ai-hackathon-2026","projectNumber":"961887252239","displayName":"nyaya-ai-hackathon-2026","name":"projects/nyaya-ai-hackathon-2026","resources":{"hostingSite":"nyaya-ai-hackathon-2026"},"state":"ACTIVE","etag":"1_22bfb6c9-eaf4-4b2a-a132-f365ef13c3a0"}
+[debug] [2026-04-27T17:03:25.284Z] Checked if tokens are valid: true, expires at: 1777311153709
+[debug] [2026-04-27T17:03:25.284Z] Checked if tokens are valid: true, expires at: 1777311153709
+[debug] [2026-04-27T17:03:25.284Z] >>> [apiv2][query] GET https://firebasehosting.googleapis.com/v1beta1/projects/nyaya-ai-hackathon-2026/sites pageToken=&pageSize=10
+[debug] [2026-04-27T17:03:26.608Z] <<< [apiv2][status] GET https://firebasehosting.googleapis.com/v1beta1/projects/nyaya-ai-hackathon-2026/sites 200
+[debug] [2026-04-27T17:03:26.608Z] <<< [apiv2][body] GET https://firebasehosting.googleapis.com/v1beta1/projects/nyaya-ai-hackathon-2026/sites {"sites":[{"name":"projects/nyaya-ai-hackathon-2026/sites/nyaya-ai-hackathon-2026","defaultUrl":"https://nyaya-ai-hackathon-2026.web.app","type":"DEFAULT_SITE"}]}
+[debug] [2026-04-27T17:03:26.609Z] Checked if tokens are valid: true, expires at: 1777311153709
+[debug] [2026-04-27T17:03:26.609Z] Checked if tokens are valid: true, expires at: 1777311153709
+[debug] [2026-04-27T17:03:26.609Z] >>> [apiv2][query] GET https://firebasehosting.googleapis.com/v1beta1/projects/nyaya-ai-hackathon-2026/sites 
+[debug] [2026-04-27T17:03:27.340Z] <<< [apiv2][status] GET https://firebasehosting.googleapis.com/v1beta1/projects/nyaya-ai-hackathon-2026/sites 200
+[debug] [2026-04-27T17:03:27.340Z] <<< [apiv2][body] GET https://firebasehosting.googleapis.com/v1beta1/projects/nyaya-ai-hackathon-2026/sites {"sites":[{"name":"projects/nyaya-ai-hackathon-2026/sites/nyaya-ai-hackathon-2026","defaultUrl":"https://nyaya-ai-hackathon-2026.web.app","type":"DEFAULT_SITE"}]}
+[debug] [2026-04-27T17:03:27.340Z] Checked if tokens are valid: true, expires at: 1777311153709
+[debug] [2026-04-27T17:03:27.340Z] Checked if tokens are valid: true, expires at: 1777311153709
+[debug] [2026-04-27T17:03:27.341Z] >>> [apiv2][query] GET https://firebase.googleapis.com/v1beta1/projects/nyaya-ai-hackathon-2026/webApps/-/config [none]
+[debug] [2026-04-27T17:03:28.278Z] <<< [apiv2][status] GET https://firebase.googleapis.com/v1beta1/projects/nyaya-ai-hackathon-2026/webApps/-/config 200
+[debug] [2026-04-27T17:03:28.278Z] <<< [apiv2][body] GET https://firebase.googleapis.com/v1beta1/projects/nyaya-ai-hackathon-2026/webApps/-/config {"projectId":"nyaya-ai-hackathon-2026","storageBucket":"nyaya-ai-hackathon-2026.firebasestorage.app","apiKey":"AIzaSyDigwC7TKpRALnKgEuSdMB51Yy81nR8xhk","authDomain":"nyaya-ai-hackathon-2026.firebaseapp.com","messagingSenderId":"961887252239","projectNumber":"961887252239","version":"2"}
+[info] 
+   Thank you for trying our early preview of Next.js support on Firebase Hosting.
+   During the preview, support is best-effort and breaking changes can be expected. Proceed with caution.
+   The integration is known to work with Next.js version 12 - 15.0. You may encounter errors.
+
+   Documentation: https://firebase.google.com/docs/hosting/frameworks/nextjs
+   File a bug: https://github.com/firebase/firebase-tools/issues/new?template=bug_report.md
+   Submit a feature request: https://github.com/firebase/firebase-tools/issues/new?template=feature_request.md
+
+   We'd love to learn from you. Express your interest in helping us shape the future of Firebase Hosting: https://goo.gle/41enW5X
+
+[debug] [2026-04-27T17:03:30.729Z] Checked if tokens are valid: true, expires at: 1777311153709
+[debug] [2026-04-27T17:03:30.729Z] Checked if tokens are valid: true, expires at: 1777311153709
+[debug] [2026-04-27T17:03:30.729Z] >>> [apiv2][query] GET https://firebasehosting.googleapis.com/v1beta1/projects/nyaya-ai-hackathon-2026/sites/nyaya-ai-hackathon-2026 [none]
+[debug] [2026-04-27T17:03:31.359Z] <<< [apiv2][status] GET https://firebasehosting.googleapis.com/v1beta1/projects/nyaya-ai-hackathon-2026/sites/nyaya-ai-hackathon-2026 200
+[debug] [2026-04-27T17:03:31.359Z] <<< [apiv2][body] GET https://firebasehosting.googleapis.com/v1beta1/projects/nyaya-ai-hackathon-2026/sites/nyaya-ai-hackathon-2026 {"name":"projects/nyaya-ai-hackathon-2026/sites/nyaya-ai-hackathon-2026","defaultUrl":"https://nyaya-ai-hackathon-2026.web.app","type":"DEFAULT_SITE"}
+[info] > Info: Loaded env from .env.local
+
+[info] Creating an optimized production build...
+
+[info] 
+
+[info] > Build error occurred
+
+[info] Error: > Couldn't find a `pages` directory. Please create one under the project root
+    at findPagesDir (/Users/arnavpaniya/GDG/frontend/node_modules/next/dist/lib/find-pages-dir.js:3:170)
+    at build (/Users/arnavpaniya/GDG/frontend/node_modules/next/dist/build/index.js:4:451)
+
+[debug] [2026-04-27T17:03:33.240Z] Error: Unable to load next.config.mjs.
+    at getConfig (/opt/homebrew/lib/node_modules/firebase-tools/lib/frameworks/next/index.js:510:23)
+    at async build (/opt/homebrew/lib/node_modules/firebase-tools/lib/frameworks/next/index.js:85:59)
+    at async prepareFrameworks (/opt/homebrew/lib/node_modules/firebase-tools/lib/frameworks/index.js:226:33)
+    at async deploy (/opt/homebrew/lib/node_modules/firebase-tools/lib/deploy/index.js:80:9)
+[error] 
+[error] Error: An unexpected error has occurred.
