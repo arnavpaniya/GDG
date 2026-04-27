@@ -6,11 +6,16 @@
     "start:backend": "cd backend && npm run dev",
     "start:ml": "cd ml && python -m nyaya_ai.api_service",
     "start:frontend": "cd frontend && npm run dev",
-    "install:all": "cd backend && npm install && cd ../frontend && npm install && cd ../ml && pip install -r requirements.txt",
+    "install:all": "cd backend && npm install --legacy-peer-deps && cd ../frontend && npm install --legacy-peer-deps && cd ../ml && pip install -r requirements.txt",
     "test:backend": "curl http://localhost:5000/api/v1/analyze/status",
-    "test:ml": "curl http://localhost:5001/health"
+    "test:ml": "curl http://localhost:5001/health",
+    "dev": "npx concurrently \"npm run start:backend\" \"npm run start:frontend\" \"npm run start:ml\""
+  },
+  "devDependencies": {
+    "concurrently": "^8.2.2"
   },
   "keywords": ["ai", "bias-detection", "fairness", "ml"],
+
   "author": "Nyaya AI Team",
   "license": "MIT"
 }

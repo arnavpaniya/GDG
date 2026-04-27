@@ -16,13 +16,16 @@ export default function AppHome() {
 
   useEffect(() => {
     if (user && currentChatId) {
+      // Logged-in: subscribe to Firestore messages for this chat
       const unsubscribe = subscribeToMessages(user.uid, currentChatId, (msgs) => {
         setMessages(msgs);
       });
       return () => unsubscribe();
-    } else {
+    } else if (!currentChatId) {
+      // No active chat at all — reset to empty (e.g. on logout or new session)
       setMessages([]);
     }
+    // If currentChatId is 'guest-session', do nothing — messages are managed locally in state
   }, [user, currentChatId, setMessages]);
 
   const handleSendMessage = async (text) => {
@@ -31,15 +34,25 @@ export default function AppHome() {
     if (!user) {
       setCurrentChatId('guest-session');
       const newUserMsg = { id: `guest-msg-${Date.now()}`, role: 'user', content: text, createdAt: new Date() };
+      console.log('[Nyaya] Adding user message to store:', newUserMsg);
       setMessages((prev) => [...prev, newUserMsg]);
       setIsLoading(true);
       try {
+        console.log('[Nyaya] Calling backend with:', text);
         const response = await sendChatMessage(text, null);
-        const assistantMsg = { id: `guest-msg-reply-${Date.now()}`, role: 'assistant', content: response.data.text, createdAt: new Date() };
+        console.log('[Nyaya] Backend response:', response);
+        const assistantMsg = {
+          id: `guest-msg-reply-${Date.now()}`,
+          role: 'assistant',
+          content: response.data.text,
+          structured: response.data.structured || null,
+          createdAt: new Date()
+        };
+        console.log('[Nyaya] Adding assistant message:', assistantMsg);
         setMessages((prev) => [...prev, assistantMsg]);
       } catch (err) {
-        console.error("Chat error:", err);
-        setMessages((prev) => [...prev, { id: `guest-msg-err-${Date.now()}`, role: 'assistant', content: '❌ Sorry, I encountered an error processing your request.', createdAt: new Date() }]);
+        console.error('[Nyaya] Chat error:', err);
+        setMessages((prev) => [...prev, { id: `guest-msg-err-${Date.now()}`, role: 'assistant', content: '❌ Sorry, I encountered an error: ' + err.message, createdAt: new Date() }]);
       } finally {
         setIsLoading(false);
       }
@@ -68,7 +81,8 @@ export default function AppHome() {
       const response = await sendChatMessage(text, context);
       await addMessage(user.uid, chatId, {
         role: 'assistant',
-        content: response.data.text
+        content: response.data.text,
+        structured: response.data.structured || null,
       });
     } catch (err) {
       console.error("Chat error:", err);
@@ -231,7 +245,11 @@ export default function AppHome() {
               onKeyDown={(e) => {
                 if (e.key === 'Enter' && !e.shiftKey) {
                   e.preventDefault();
-                  handleSendMessage(e.target.value);
+                  const val = e.target.value.trim();
+                  if (val) {
+                    handleSendMessage(val);
+                    e.target.value = '';
+                  }
                 }
               }}
             />
@@ -251,8 +269,12 @@ export default function AppHome() {
               </div>
               <button
                 onClick={() => {
-                  const textarea = document.querySelector('textarea');
-                  handleSendMessage(textarea.value);
+                  const textarea = document.querySelector('[data-testid="app-prompt-input"]');
+                  const val = textarea?.value?.trim();
+                  if (val) {
+                    handleSendMessage(val);
+                    if (textarea) textarea.value = '';
+                  }
                 }}
                 data-testid="app-send-btn"
                 className="bg-accent-gold text-white p-2 rounded-lg hover:opacity-90 transition-all shadow-soft"

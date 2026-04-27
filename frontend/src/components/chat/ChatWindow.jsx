@@ -6,9 +6,11 @@ import ChatInput from './ChatInput';
 import AuthGate from './AuthGate';
 import useStore from '@/store/useStore';
 
-const ChatWindow = ({ messages, onSendMessage, onFileUpload, isLoading }) => {
+const ChatWindow = ({ messages: messagesProp, onSendMessage, onFileUpload, isLoading }) => {
   const scrollRef = useRef(null);
   const { currentChatId } = useStore();
+  // Always ensure messages is a safe array regardless of what gets passed in
+  const messages = Array.isArray(messagesProp) ? messagesProp : [];
 
   useEffect(() => {
     if (scrollRef.current) {
@@ -40,7 +42,7 @@ const ChatWindow = ({ messages, onSendMessage, onFileUpload, isLoading }) => {
             </div>
           )}
 
-          {currentChatId === 'guest-session' && <AuthGate />}
+          {/* AuthGate removed so guest mode works freely */}
         </div>
       </div>
 

@@ -20,24 +20,29 @@ import { db, auth } from './firebase';
  */
 
 export const subscribeToChats = (userId, callback) => {
-  if (!userId) return () => {};
+  if (!userId || !db) return () => {};
   
-  const q = query(
-    collection(db, `users/${userId}/chats`),
-    orderBy('createdAt', 'desc')
-  );
+  try {
+    const q = query(
+      collection(db, `users/${userId}/chats`),
+      orderBy('createdAt', 'desc')
+    );
 
-  return onSnapshot(q, (snapshot) => {
-    const chats = snapshot.docs.map(doc => ({
-      id: doc.id,
-      ...doc.data()
-    }));
-    callback(chats);
-  });
+    return onSnapshot(q, (snapshot) => {
+      const chats = snapshot.docs.map(doc => ({
+        id: doc.id,
+        ...doc.data()
+      }));
+      callback(chats);
+    });
+  } catch (error) {
+    console.error("Firestore subscribeToChats error:", error);
+    return () => {};
+  }
 };
 
 export const createNewChat = async (userId, title = 'New Analysis') => {
-  if (!userId) throw new Error('User ID required');
+  if (!userId || !db) throw new Error('User ID required or Firestore not configured');
   
   const docRef = await addDoc(collection(db, `users/${userId}/chats`), {
     title,
@@ -49,29 +54,34 @@ export const createNewChat = async (userId, title = 'New Analysis') => {
 };
 
 export const deleteChat = async (userId, chatId) => {
-  if (!userId || !chatId) return;
+  if (!userId || !chatId || !db) return;
   await deleteDoc(doc(db, `users/${userId}/chats`, chatId));
 };
 
 export const subscribeToMessages = (userId, chatId, callback) => {
-  if (!userId || !chatId) return () => {};
+  if (!userId || !chatId || !db) return () => {};
   
-  const q = query(
-    collection(db, `users/${userId}/chats/${chatId}/messages`),
-    orderBy('createdAt', 'asc')
-  );
+  try {
+    const q = query(
+      collection(db, `users/${userId}/chats/${chatId}/messages`),
+      orderBy('createdAt', 'asc')
+    );
 
-  return onSnapshot(q, (snapshot) => {
-    const messages = snapshot.docs.map(doc => ({
-      id: doc.id,
-      ...doc.data()
-    }));
-    callback(messages);
-  });
+    return onSnapshot(q, (snapshot) => {
+      const messages = snapshot.docs.map(doc => ({
+        id: doc.id,
+        ...doc.data()
+      }));
+      callback(messages);
+    });
+  } catch (error) {
+    console.error("Firestore subscribeToMessages error:", error);
+    return () => {};
+  }
 };
 
 export const addMessage = async (userId, chatId, message) => {
-  if (!userId || !chatId) return;
+  if (!userId || !chatId || !db) return;
   
   await addDoc(collection(db, `users/${userId}/chats/${chatId}/messages`), {
     ...message,
@@ -84,7 +94,7 @@ export const updateChatMessages = async (userId, chatId, messages) => {
 };
 
 export const clearAllHistory = async (userId) => {
-  if (!userId) return;
+  if (!userId || !db) return;
   
   const chatsQuery = query(collection(db, `users/${userId}/chats`));
   const chatsSnapshot = await getDocs(chatsQuery);
@@ -107,7 +117,8 @@ export const clearAllHistory = async (userId) => {
 };
 
 export const updateUserProfile = async (displayName) => {
-  if (!auth.currentUser) return;
+  if (!auth || !auth.currentUser) return;
   await updateProfile(auth.currentUser, { displayName });
 };
+
 

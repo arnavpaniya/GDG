@@ -3,7 +3,8 @@
  * Handles all communication with the Node.js backend and ML service
  */
 
-const API_URL = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:5000';
+const API_URL = process.env.NEXT_PUBLIC_API_URL || '';
+
 const API_BASE = process.env.NEXT_PUBLIC_API_BASE_PATH || '/api/v1';
 
 class APIError extends Error {

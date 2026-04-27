@@ -14,7 +14,11 @@ const useStore = create((set) => ({
   setChats: (chats) => set({ chats }),
   setSidebarOpen: (isOpen) => set({ isSidebarOpen: isOpen }),
   setCurrentChatId: (id) => set({ currentChatId: id }),
-  setMessages: (messages) => set({ messages }),
+  setMessages: (messages) => set((state) => ({
+    messages: typeof messages === 'function'
+      ? messages(Array.isArray(state.messages) ? state.messages : [])
+      : (Array.isArray(messages) ? messages : []),
+  })),
   setSettingsOpen: (isOpen) => set({ isSettingsOpen: isOpen }),
   setTheme: (theme) => {
     localStorage.setItem('theme', theme);

@@ -16,16 +16,23 @@ const firebaseConfig = {
   appId: process.env.NEXT_PUBLIC_FIREBASE_APP_ID
 };
 
-// Initialize Firebase
-const app = getApps().length === 0 ? initializeApp(firebaseConfig) : getApp();
+// Initialize Firebase only if the API key is present
+const isFirebaseConfigured = !!firebaseConfig.apiKey;
 
-// Initialize Firebase services
-// Using initializeAuth with explicit persistence for better Next.js compatibility
-export const auth = getApps().length === 0 
-  ? initializeAuth(app, { persistence: browserLocalPersistence })
-  : getAuth(app);
+let app;
+if (isFirebaseConfigured) {
+  app = getApps().length === 0 ? initializeApp(firebaseConfig) : getApp();
+} else {
+  console.warn("Firebase API Key is missing. Some features (auth, database) will be disabled.");
+}
 
-export const db = getFirestore(app);
-export const googleProvider = new GoogleAuthProvider();
+// Initialize Firebase services with null fallbacks if not configured
+export const auth = (isFirebaseConfigured && app) 
+  ? (getApps().length === 0 ? initializeAuth(app, { persistence: browserLocalPersistence }) : getAuth(app))
+  : null;
+
+export const db = (isFirebaseConfigured && app) ? getFirestore(app) : null;
+export const googleProvider = isFirebaseConfigured ? new GoogleAuthProvider() : null;
 
 export default app;
+
