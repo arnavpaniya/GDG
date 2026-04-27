@@ -1,17 +1,23 @@
 "use client";
 
 import Link from "next/link";
-import { useEffect, useState } from "react";
-import { motion } from "framer-motion";
-import { ArrowUpRight, Menu, X } from "lucide-react";
+import { useEffect, useState, useRef } from "react";
+import { motion, AnimatePresence } from "framer-motion";
+import { ArrowUpRight, Menu, X, LogOut, Settings, User as UserIcon } from "lucide-react";
 import ThemeToggle from "./ThemeToggle";
 import LanguageSwitcher from "./LanguageSwitcher";
 import { useI18n } from "@/lib/i18n/I18nProvider";
+import useStore from "@/store/useStore";
+import { auth } from "@/utils/firebase";
+import { signOut } from "firebase/auth";
 
 export default function Navbar() {
   const { t } = useI18n();
   const [scrolled, setScrolled] = useState(false);
   const [open, setOpen] = useState(false);
+  const [profileOpen, setProfileOpen] = useState(false);
+  const profileRef = useRef(null);
+  const { user, setUser, setSettingsOpen } = useStore();
 
   useEffect(() => {
     const onScroll = () => setScrolled(window.scrollY > 24);
@@ -19,6 +25,26 @@ export default function Navbar() {
     window.addEventListener("scroll", onScroll, { passive: true });
     return () => window.removeEventListener("scroll", onScroll);
   }, []);
+
+  useEffect(() => {
+    const handleClickOutside = (event) => {
+      if (profileRef.current && !profileRef.current.contains(event.target)) {
+        setProfileOpen(false);
+      }
+    };
+    document.addEventListener("mousedown", handleClickOutside);
+    return () => document.removeEventListener("mousedown", handleClickOutside);
+  }, []);
+
+  const handleSignOut = async () => {
+    try {
+      await signOut(auth);
+      setUser(null);
+      setProfileOpen(false);
+    } catch (e) {
+      console.error("Sign out error", e);
+    }
+  };
 
   const NAV_LINKS = [
     { href: "#features", label: t("nav.features") },
@@ -67,14 +93,77 @@ export default function Navbar() {
             <LanguageSwitcher />
           </div>
           <ThemeToggle />
-          <Link
-            href="/login"
-            data-testid="nav-sign-in"
-            className="hidden md:inline-flex items-center gap-1.5 bg-accent-gold text-[#0a0a08] hover:brightness-110 active:scale-[0.98] px-4 py-2 rounded-pill text-sm font-semibold transition-all shadow-glow-gold"
-          >
-            Sign In
-            <ArrowUpRight size={15} strokeWidth={2.5} />
-          </Link>
+          {user ? (
+            <div className="hidden md:block relative" ref={profileRef}>
+              <button 
+                onClick={() => setProfileOpen(!profileOpen)}
+                className="w-10 h-10 rounded-full border border-border overflow-hidden bg-bg-surface flex items-center justify-center hover:opacity-80 transition-fast shadow-soft"
+              >
+                {user.avatar ? (
+                  <img src={user.avatar} alt="Profile" className="w-full h-full object-cover" />
+                ) : (
+                  <span className="font-serif font-bold text-accent-gold text-lg">
+                    {user.name ? user.name.charAt(0).toUpperCase() : <UserIcon size={18} />}
+                  </span>
+                )}
+              </button>
+              
+              <AnimatePresence>
+                {profileOpen && (
+                  <motion.div 
+                    initial={{ opacity: 0, y: 10, scale: 0.95 }}
+                    animate={{ opacity: 1, y: 0, scale: 1 }}
+                    exit={{ opacity: 0, y: 10, scale: 0.95 }}
+                    transition={{ duration: 0.15 }}
+                    className="absolute right-0 mt-2 w-56 bg-bg-surface border border-border rounded-xl shadow-lg py-2 z-50 overflow-hidden"
+                  >
+                    <div className="px-4 py-3 border-b border-border">
+                      <p className="text-sm font-medium text-text-primary truncate">{user.name || 'User'}</p>
+                      <p className="text-xs text-text-tertiary truncate">{user.email}</p>
+                    </div>
+                    <div className="py-1">
+                      <Link 
+                        href="/app" 
+                        onClick={() => setProfileOpen(false)}
+                        className="flex items-center gap-2 px-4 py-2 text-sm text-text-secondary hover:bg-black/5 dark:hover:bg-white/5 transition-colors"
+                      >
+                        <UserIcon size={16} />
+                        Dashboard
+                      </Link>
+                      <button 
+                        onClick={() => {
+                          setSettingsOpen(true);
+                          setProfileOpen(false);
+                        }}
+                        className="w-full flex items-center gap-2 px-4 py-2 text-sm text-text-secondary hover:bg-black/5 dark:hover:bg-white/5 transition-colors"
+                      >
+                        <Settings size={16} />
+                        Settings
+                      </button>
+                    </div>
+                    <div className="border-t border-border py-1">
+                      <button 
+                        onClick={handleSignOut}
+                        className="w-full flex items-center gap-2 px-4 py-2 text-sm text-accent-red hover:bg-accent-red/10 transition-colors"
+                      >
+                        <LogOut size={16} />
+                        Sign Out
+                      </button>
+                    </div>
+                  </motion.div>
+                )}
+              </AnimatePresence>
+            </div>
+          ) : (
+            <Link
+              href="/login"
+              data-testid="nav-sign-in"
+              className="hidden md:inline-flex items-center gap-1.5 bg-accent-gold text-[#0a0a08] hover:brightness-110 active:scale-[0.98] px-4 py-2 rounded-pill text-sm font-semibold transition-all shadow-glow-gold"
+            >
+              Sign In
+              <ArrowUpRight size={15} strokeWidth={2.5} />
+            </Link>
+          )}
           <button
             onClick={() => setOpen((v) => !v)}
             className="lg:hidden p-2 rounded-md border border-border text-text-primary"
@@ -106,13 +195,50 @@ export default function Navbar() {
             <div className="sm:hidden mt-2">
               <LanguageSwitcher />
             </div>
-            <Link
-              href="/login"
-              className="mt-3 inline-flex items-center justify-center gap-1.5 bg-accent-gold text-[#0a0a08] px-4 py-2.5 rounded-pill text-sm font-semibold"
-              data-testid="nav-sign-in-mobile"
-            >
-              Sign In <ArrowUpRight size={15} strokeWidth={2.5} />
-            </Link>
+            {user ? (
+              <div className="mt-3 border-t border-border pt-3">
+                <div className="px-2 mb-2">
+                  <p className="text-sm font-medium text-text-primary truncate">{user.name || 'User'}</p>
+                  <p className="text-xs text-text-tertiary truncate">{user.email}</p>
+                </div>
+                <Link
+                  href="/app"
+                  onClick={() => setOpen(false)}
+                  className="flex items-center gap-2 py-2 px-2 text-text-secondary hover:text-text-primary"
+                >
+                  <UserIcon size={16} />
+                  Dashboard
+                </Link>
+                <button
+                  onClick={() => {
+                    setSettingsOpen(true);
+                    setOpen(false);
+                  }}
+                  className="w-full flex items-center gap-2 py-2 px-2 text-text-secondary hover:text-text-primary text-left"
+                >
+                  <Settings size={16} />
+                  Settings
+                </button>
+                <button
+                  onClick={() => {
+                    handleSignOut();
+                    setOpen(false);
+                  }}
+                  className="w-full flex items-center gap-2 py-2 px-2 text-accent-red hover:text-accent-red/80 text-left"
+                >
+                  <LogOut size={16} />
+                  Sign Out
+                </button>
+              </div>
+            ) : (
+              <Link
+                href="/login"
+                className="mt-3 inline-flex items-center justify-center gap-1.5 bg-accent-gold text-[#0a0a08] px-4 py-2.5 rounded-pill text-sm font-semibold"
+                data-testid="nav-sign-in-mobile"
+              >
+                Sign In <ArrowUpRight size={15} strokeWidth={2.5} />
+              </Link>
+            )}
           </div>
         </motion.div>
       )}

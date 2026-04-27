@@ -58,12 +58,19 @@ app.use((req, res) => {
 
 // ── Global error handler ──────────────────────────────────────────────────── //
 app.use((err, req, res, _next) => {
-  console.error("[Error]", err.message);
+  // Log full error details server-side
+  console.error(`[Error] ${req.method} ${req.path}`, err);
+
   const status = err.status || err.statusCode || 500;
+  
+  // Do not expose internal error messages for 500 errors in production
+  const isProd = NODE_ENV === "production";
+  const message = (status < 500 || !isProd) ? err.message : "An unexpected internal error occurred.";
+
   res.status(status).json({
     success: false,
-    message: err.message || "Internal Server Error",
-    ...(NODE_ENV !== "production" && { stack: err.stack }),
+    message,
+    ...( !isProd && { stack: err.stack } ),
   });
 });
 

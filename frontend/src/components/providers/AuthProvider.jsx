@@ -53,7 +53,7 @@ export default function AuthProvider({ children }) {
     let unsubscribeChats = () => {};
 
     const unsubscribeAuth = onAuthStateChanged(auth, (user) => {
-      if (user) {
+      if (user && user.emailVerified) {
         setUser({
           uid: user.uid,
           name: user.displayName || user.email.split("@")[0],
@@ -71,6 +71,9 @@ export default function AuthProvider({ children }) {
           router.push("/app");
         }
       } else {
+        if (user && !user.emailVerified) {
+          auth.signOut();
+        }
         setUser(null);
         setChats([]);
         unsubscribeChats();
