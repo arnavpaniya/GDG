@@ -15,6 +15,7 @@
     "indexes": "firestore.indexes.json"
   },
   "hosting": {
+    "site": "nyaya-ai-official",
     "source": "frontend",
     "ignore": [
       "firebase.json",
