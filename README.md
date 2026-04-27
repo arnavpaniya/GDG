@@ -116,33 +116,119 @@ See [`DESIGN_SKILL.md`](./DESIGN_SKILL.md) for:
 
 ## Getting Started
 
+### Quick Start (All Services)
+
+**Option 1: Manual Start (Recommended)**
+
+Open 3 terminal windows:
+
 ```bash
-# Clone
-git clone https://github.com/your-org/nyaya-ai.git
-cd nyaya-ai
-
-# Install
+# Terminal 1 - Backend (Port 5000)
+cd backend
 npm install
-
-# Dev server
 npm run dev
 
-# Build
-npm run build
+# Terminal 2 - ML Service (Port 5001)
+cd ml
+pip install -r requirements.txt
+python -m nyaya_ai.api_service
+
+# Terminal 3 - Frontend (Port 3000)
+cd frontend
+npm install
+npm run dev
+```
+
+**Option 2: Using Scripts**
+
+```bash
+# Install all dependencies
+npm run install:all
+
+# Start services (in separate terminals)
+npm run start:backend    # Terminal 1
+npm run start:ml         # Terminal 2
+npm run start:frontend   # Terminal 3
+```
+
+Then open: **http://localhost:3000**
+
+### Individual Service Setup
+
+**Frontend Only:**
+```bash
+cd frontend
+npm install
+npm run dev
+```
+
+**Backend Only:**
+```bash
+cd backend
+npm install
+npm run dev
+```
+
+**ML Service Only:**
+```bash
+cd ml
+pip install -r requirements.txt
+python -m nyaya_ai.api_service
 ```
 
 ---
 
-## Prototype Scope (Hackathon)
+## Architecture
 
-This is a **frontend-only prototype**. Bias detection runs client-side using simplified statistical algorithms on uploaded CSV data. No backend or real ML model required.
+Nyaya AI is a **full-stack application** with three integrated services:
 
-**Simulated analysis flow:**
-1. User uploads CSV in chat
-2. PapaParse extracts columns
-3. `biasEngine.js` computes group-level positive rates per attribute
-4. Disparate impact ratio calculated vs 80% rule threshold
-5. Results rendered as score + explanation cards in chat
+```
+┌─────────────────┐
+│   Frontend      │  Next.js (Port 3000)
+│   (React)       │  - User interface
+└────────┬────────┘  - File upload
+         │           - Analysis display
+         ▼
+┌─────────────────┐
+│   Backend       │  Node.js/Express (Port 5000)
+│   (API)         │  - CSV parsing
+└────────┬────────┘  - JS-based bias detection
+         │           - API routing
+         ▼
+┌─────────────────┐
+│   ML Service    │  Python/Flask (Port 5001)
+│   (AI Model)    │  - Logistic Regression
+└─────────────────┘  - Fairness metrics
+                     - Bias mitigation
+```
+
+### Key Features
+
+✅ **Full ML Integration** - Python-based ML pipeline with Logistic Regression  
+✅ **Bias Mitigation** - SMOTE and Reweighting techniques  
+✅ **Before/After Analysis** - Compare fairness metrics pre and post-mitigation  
+✅ **Fallback Mechanism** - Client-side analysis if backend unavailable  
+✅ **Real-time Chat** - Interactive analysis results in chat interface  
+✅ **Export Reports** - PDF, CSV, and JSON export functionality  
+
+### Analysis Flow
+
+1. **User uploads CSV** → Frontend
+2. **Frontend sends file** → Backend API (`/api/v1/analyze/upload`)
+3. **Backend processes CSV** → Returns instant JS-based analysis
+4. **Backend calls ML service** → Python Flask API (`/analyze`)
+5. **ML service runs pipeline** → Trains model, detects bias, applies mitigation
+6. **Results return to frontend** → Display in chat with visualizations
+
+---
+
+## Documentation
+
+- **[Integration Guide](./INTEGRATION_GUIDE.md)** - Complete setup and architecture
+- **[Testing Guide](./TESTING_GUIDE.md)** - API testing and troubleshooting
+- **[Design System](./DESIGN_SKILL.md)** - UI/UX specifications
+- **[ML Pipeline](./ml/README.md)** - Python ML service details
+- **[Backend API](./backend/README.md)** - Node.js API documentation
 
 ---
 

@@ -20,12 +20,12 @@ const ChatWindow = ({ messages, onSendMessage, onFileUpload, isLoading }) => {
     <div className="flex-1 flex flex-col relative h-full overflow-hidden bg-bg-primary">
       <div 
         ref={scrollRef}
-        className="flex-1 overflow-y-auto px-comfortable pt-large-section pb-comfortable scroll-smooth"
+        className="flex-1 overflow-y-auto px-4 pt-8 pb-4 scroll-smooth"
       >
-        <div className="max-w-[720px] mx-auto w-full">
+        <div className="max-w-[800px] mx-auto w-full">
           {messages.length === 0 ? (
-            <div className="h-full flex items-center justify-center text-text-tertiary italic text-sm mt-large-section">
-              No messages yet. Start by asking a question or uploading a dataset.
+            <div className="h-full flex items-center justify-center text-text-tertiary text-sm">
+              <p>No messages yet. Start a new conversation.</p>
             </div>
           ) : (
             messages.map((msg, index) => (
@@ -34,7 +34,7 @@ const ChatWindow = ({ messages, onSendMessage, onFileUpload, isLoading }) => {
           )}
           
           {isLoading && (
-            <div className="flex items-center gap-base text-text-secondary text-sm animate-pulse mb-section bg-bg-surface p-comfortable rounded-card border border-border shadow-soft w-fit">
+            <div className="flex items-center gap-2 text-text-secondary text-sm mb-4 animate-pulse bg-bg-surface p-4 rounded-lg border border-border shadow-soft w-fit">
               <div className="w-2 h-2 bg-accent-gold rounded-full"></div>
               Analyzing dataset for potential bias...
             </div>

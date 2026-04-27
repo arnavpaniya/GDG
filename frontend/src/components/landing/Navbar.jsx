@@ -72,7 +72,7 @@ export default function Navbar() {
             data-testid="nav-sign-in"
             className="hidden md:inline-flex items-center gap-1.5 bg-accent-gold text-[#0a0a08] hover:brightness-110 active:scale-[0.98] px-4 py-2 rounded-pill text-sm font-semibold transition-all shadow-glow-gold"
           >
-            Launch App
+            Sign In
             <ArrowUpRight size={15} strokeWidth={2.5} />
           </Link>
           <button
@@ -107,11 +107,11 @@ export default function Navbar() {
               <LanguageSwitcher />
             </div>
             <Link
-              href="/app"
+              href="/login"
               className="mt-3 inline-flex items-center justify-center gap-1.5 bg-accent-gold text-[#0a0a08] px-4 py-2.5 rounded-pill text-sm font-semibold"
               data-testid="nav-sign-in-mobile"
             >
-              Launch App <ArrowUpRight size={15} strokeWidth={2.5} />
+              Sign In <ArrowUpRight size={15} strokeWidth={2.5} />
             </Link>
           </div>
         </motion.div>

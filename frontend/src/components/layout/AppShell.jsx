@@ -8,7 +8,7 @@ const AppShell = ({ children }) => {
   return (
     <div className="flex h-screen w-full bg-bg-primary overflow-hidden relative">
       {/* Main Sidebar */}
-      <div className={`transition-all duration-300 ease-in-out ${isSidebarOpen ? 'w-[300px]' : 'w-0'}`}>
+      <div className={`transition-all duration-300 ease-in-out ${isSidebarOpen ? 'w-[260px]' : 'w-0'}`}>
         <Sidebar />
       </div>
 
@@ -16,12 +16,9 @@ const AppShell = ({ children }) => {
       {!isSidebarOpen && (
         <button 
           onClick={() => setSidebarOpen(true)}
-          className="absolute top-4 left-4 z-50 p-2 bg-bg-surface border border-border rounded-button text-text-secondary hover:text-accent-gold transition-all shadow-soft group"
+          className="absolute top-4 left-4 z-50 p-2 bg-bg-surface border border-border rounded-lg text-text-tertiary hover:text-accent-gold transition-all shadow-soft"
         >
-          <PanelLeftOpen size={20} />
-          <span className="absolute left-full ml-2 px-2 py-1 bg-text-primary text-white text-[10px] rounded opacity-0 group-hover:opacity-100 transition-opacity whitespace-nowrap pointer-events-none uppercase tracking-widest font-bold">
-            Expand Sidebar
-          </span>
+          <PanelLeftOpen size={18} />
         </button>
       )}
 
