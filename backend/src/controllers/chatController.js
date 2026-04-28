@@ -74,35 +74,38 @@ STRICT OUTPUT FORMAT — RETURN ONLY VALID JSON, NOTHING ELSE:
 
 CRITICAL: Your ENTIRE response must be a single valid JSON object. No markdown, no code fences, no explanatory text outside the JSON.`;
 
-// ── Call Gemini via REST API (v1beta) ───────────────────────────────── //
-async function callGemini(prompt) {
-  const model = "gemini-1.5-flash";
-  const url = `https://generativelanguage.googleapis.com/v1beta/models/${model}:generateContent?key=${GEMINI_API_KEY}`;
+const { GoogleGenerativeAI } = require("@google/generative-ai");
 
-  const body = {
-    contents: [{ parts: [{ text: prompt }] }],
+// ── Call Gemini via official SDK ────────────────────────────────────────── //
+async function callGemini(prompt) {
+  if (!GEMINI_API_KEY) throw new Error("GEMINI_API_KEY is not configured");
+
+  const modelName = "gemini-2.5-flash";
+  console.log(`[Gemini] Calling ${modelName}... (Prompt length: ${prompt.length})`);
+
+  const genAI = new GoogleGenerativeAI(GEMINI_API_KEY);
+  const model = genAI.getGenerativeModel({ 
+    model: modelName,
     generationConfig: {
       temperature: 0.4,
       topP: 0.9,
-      maxOutputTokens: 1024,
-    },
-  };
-
-  const response = await fetch(url, {
-    method: "POST",
-    headers: { "Content-Type": "application/json" },
-    body: JSON.stringify(body),
+      maxOutputTokens: 2048,
+    }
   });
 
-  if (!response.ok) {
-    const errText = await response.text();
-    throw new Error(`Gemini API ${response.status}: ${errText.substring(0, 200)}`);
-  }
-
-  const data = await response.json();
-  const rawText = data?.candidates?.[0]?.content?.parts?.[0]?.text;
-  if (!rawText) throw new Error("Empty response from Gemini");
-  return rawText.trim();
+  const result = await model.generateContent(prompt);
+  const response = await result.response;
+  
+  // Log finish reason if possible
+  const candidate = response.candidates?.[0];
+  console.log(`[Gemini] Finish Reason: ${candidate?.finishReason}`);
+  
+  const text = response.text();
+  
+  console.log(`[Gemini] Response received (length: ${text?.length || 0})`);
+  
+  if (!text) throw new Error("Empty response from Gemini");
+  return text.trim();
 }
 
 // ── Parse and sanitize the AI response ───────────────────────────────────── //
@@ -153,6 +156,7 @@ async function handleChat(req, res) {
     let structured = null;
     try {
       const rawText = await callGemini(fullPrompt);
+      console.log(`[Gemini] Raw text: ${rawText}`);
       structured = parseStructured(rawText);
     } catch (apiErr) {
       console.error("Gemini call failed:", apiErr.message);

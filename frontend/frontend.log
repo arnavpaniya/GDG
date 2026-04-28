@@ -1,0 +1,38 @@
+
+> frontend@0.1.0 dev
+> next dev -p 3000 -H 0.0.0.0
+
+ ⚠ Warning: Next.js inferred your workspace root, but it may not be correct.
+ We detected multiple lockfiles and selected the directory of /Users/arnavpaniya/GDG/package-lock.json as the root directory.
+ To silence this warning, set `outputFileTracingRoot` in your Next.js config, or consider removing one of the lockfiles if it's not needed.
+   See https://nextjs.org/docs/app/api-reference/config/next-config-js/output#caveats for more information.
+ Detected additional lockfiles: 
+   * /Users/arnavpaniya/GDG/frontend/package-lock.json
+
+   ▲ Next.js 15.5.15
+   - Local:        http://localhost:3000
+   - Network:      http://0.0.0.0:3000
+   - Environments: .env.local
+
+ ✓ Starting...
+ ✓ Ready in 1420ms
+ ○ Compiling / ...
+ ✓ Compiled / in 1497ms (2853 modules)
+ GET / 200 in 2059ms
+ ○ Compiling /app ...
+ ✓ Compiled /app in 2.3s (4371 modules)
+ GET /app 200 in 2538ms
+ GET / 200 in 29ms
+ ○ Compiling /login ...
+ ✓ Compiled /login in 1018ms (4393 modules)
+ GET /login 200 in 1288ms
+ ○ Compiling /signup ...
+ ✓ Compiled /signup in 729ms (4402 modules)
+ GET /signup 200 in 833ms
+ GET /app 200 in 485ms
+ GET /app 200 in 18ms
+ GET /app 200 in 829ms
+ GET / 200 in 93ms
+ GET /app 200 in 26ms
+ GET / 200 in 42ms
+ GET /app 200 in 77ms

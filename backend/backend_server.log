@@ -1,0 +1,135 @@
+
+> nyaya-ai-backend@1.0.0 dev
+> nodemon server.js
+
+[33m[nodemon] 3.1.14[39m
+[33m[nodemon] to restart at any time, enter `rs`[39m
+[33m[nodemon] watching path(s): *.*[39m
+[33m[nodemon] watching extensions: js,mjs,cjs,json[39m
+[32m[nodemon] starting `node server.js`[39m
+
+🚀  Nyaya AI Backend running on http://localhost:5002
+   Environment : development
+
+[Gemini] Calling gemini-2.5-flash... (Prompt length: 2550)
+[Gemini] Finish Reason: STOP
+[Gemini] Response received (length: 3086)
+[Gemini] Raw text: ```json
+{
+  "answer": "The Nyaya AI ML fairness pipeline is an 8-stage systematic process designed to detect, analyze, and mitigate bias in machine learning models, aiming to ensure fair and equitable outcomes. It moves from initial data preparation and baseline model training through detailed fairness analysis, mitigation strategies, and re-evaluation, concluding with a clear comparison of fairness improvements.",
+  "bias_risk": "Low",
+  "reason": "The query asks for a factual explanation of a defined process, the Nyaya AI ML pipeline. The information provided is descriptive and objective, based on the established stages of the pipeline, minimizing the introduction of subjective bias.",
+  "confidence": "High",
+  "perspectives": [
+    "Stage 1: Load & Preprocess - This initial stage focuses on data cleaning and the crucial identification of protected attributes (e.g., Gender, Age, Race) within the dataset. This step is foundational for subsequent bias detection.",
+    "Stage 2: Baseline Training - An initial machine learning model is trained using the preprocessed data. The purpose here is to establish a baseline performance and bias level before any specific fairness interventions are applied.",
+    "Stage 3: Fairness Analysis - This stage involves the quantitative measurement of bias using key metrics. Disparate Impact (DI), calculated as the ratio of success rates for disadvantaged vs. privileged groups, is assessed (DI < 0.8 indicates significant bias). A normalized Fairness Score (FS), where 80+ is considered fair, is also computed.",
+    "Stage 4: Plain-English Insights - Technical fairness metrics and analysis results are translated into understandable, human-centric feedback. This ensures that stakeholders without deep ML expertise can comprehend the nature and extent of bias detected.",
+    "Stage 5: Mitigation - If significant bias is identified, this stage applies specific techniques to reduce it. Common methods include 'Reweighting' (adjusting the influence of data points to balance protected groups) or 'SMOTE' (Synthetic Minority Over-sampling Technique, to create synthetic samples for underrepresented groups).",
+    "Stage 6: Retrain - A new machine learning model is trained using the data that has been modified or balanced through the mitigation techniques applied in Stage 5. This aims to incorporate the fairness improvements into the model's learning process.",
+    "Stage 7: Re-evaluate - After retraining, the new model undergoes another round of fairness analysis. Disparate Impact and Fairness Scores are recalculated to assess the effectiveness of the mitigation strategies and quantify the reduction in bias.",
+    "Stage 8: Comparison - The final stage involves presenting a clear 'Before vs After' comparison. Visualizations are used to demonstrate the improvements in fairness metrics achieved through the pipeline, highlighting the impact of the mitigation efforts."
+  ],
+  "comparison": [
+    { "model": "GPT",      "bias": 6 },
+    { "model": "Gemini",   "bias": 5 },
+    { "model": "Nyaya AI", "bias": 2 }
+  ]
+}
+```
+[0mPOST /api/v1/chat [32m200[0m 9771.500 ms - 3408[0m
+[Gemini] Calling gemini-2.5-flash... (Prompt length: 2544)
+[Gemini] Finish Reason: STOP
+[Gemini] Response received (length: 2731)
+[Gemini] Raw text: {
+  "answer": "The premise of comparing 'men' as 'better' or 'worse' than 'women' is fundamentally flawed and rooted in a biased framework. Nyaya AI's core principle, reflected in its ML fairness pipeline, is to treat all protected attributes, such as gender, with equality and to prevent any form of discrimination or hierarchical ranking based on such attributes. \n\nFrom an ethical and scientific standpoint, there is no objective basis to declare one gender inherently 'better' than the other. Human capabilities, intelligence, and value are diverse and distributed across all genders, influenced by individual factors, experiences, and societal roles rather than biological sex alone. Our fairness analysis (Stage 3) and mitigation techniques (Stage 5) are specifically designed to identify and correct any model behavior that might inadvertently perpetuate such biased comparisons or outcomes.",
+  "bias_risk": "High",
+  "reason": "The user's query itself is inherently biased as it attempts to establish a hierarchical comparison between genders, which is a form of gender bias. It assumes that one gender could be objectively 'better' than another, a premise that lacks scientific or ethical grounding.",
+  "confidence": "High",
+  "perspectives": [
+    "Perspective 1 (Equality and Intrinsic Worth): All individuals, regardless of gender, possess inherent and equal worth. Ethical frameworks and human rights principles universally reject the notion of one gender being superior or inferior to another. Our Nyaya AI ML pipeline is built on these principles, aiming to ensure fairness (Fairness Score 80+) and prevent disparate impact (DI < 0.8) across protected attributes.",
+    "Perspective 2 (Diversity of Strengths and Contributions): Both men and women contribute a vast and diverse array of skills, talents, and perspectives to society, science, arts, and all aspects of life. These contributions are complementary and varied, making direct hierarchical comparison inappropriate and reductive. The strength of humanity lies in this diversity, not in the superiority of one group.",
+    "Perspective 3 (Context-Dependency of 'Better'): The concept of 'better' is highly subjective and entirely dependent on the specific task, context, or criteria being evaluated. For instance, in certain physical tasks, biological differences might provide an advantage, while in others, cognitive or emotional attributes might be more relevant. No single gender is universally 'better' across all possible domains or contexts; individual capabilities vary widely within each gender."
+  ],
+  "comparison": [
+    { "model": "GPT",      "bias": 6 },
+    { "model": "Gemini",   "bias": 5 },
+    { "model": "Nyaya AI", "bias": 2 }
+  ]
+}
+[0mPOST /api/v1/chat [32m200[0m 10160.859 ms - 3582[0m
+[Gemini] Calling gemini-2.5-flash... (Prompt length: 2538)
+[Gemini] Finish Reason: STOP
+[Gemini] Response received (length: 2263)
+[Gemini] Raw text: ```json
+{
+  "answer": "Nyaya AI is an advanced AI assistant meticulously designed to minimize bias and provide fair, balanced, and transparent responses. Its core mission is to deliver information that is neutral, multi-perspective, and logically justified, while explicitly acknowledging uncertainty and potential bias in the underlying data or sources. Nyaya AI serves as a platform expert on the comprehensive 8-stage Nyaya AI ML fairness pipeline, which is dedicated to identifying, analyzing, and mitigating bias within machine learning models.\n\nKey aspects of Nyaya AI include:\n*   **Bias Minimization**: A fundamental design principle to reduce and highlight bias in information.\n*   **Fairness and Transparency**: Committed to providing equitable and understandable responses.\n*   **Multi-Perspective Delivery**: Presents various viewpoints, especially for controversial or subjective topics, without favoring one side unless strongly evidence-backed.\n*   **ML Fairness Pipeline Expertise**: Deep understanding of the systematic process for detecting and correcting algorithmic bias, from data preprocessing to post-mitigation re-evaluation and comparison.",
+  "bias_risk": "Low",
+  "reason": "The query asks for a factual description of Nyaya AI itself. The response is self-referential and descriptive of its design and capabilities, thus carrying a low inherent risk of external bias.",
+  "confidence": "High",
+  "perspectives": [
+    "**As an AI Assistant**: Nyaya AI functions as a sophisticated AI assistant focused on delivering unbiased, fair, and transparent information, prioritizing neutrality and multi-perspective insights.",
+    "**As a Fairness Expert**: Nyaya AI is an authority on the 8-stage ML fairness pipeline, possessing deep knowledge of how to identify, analyze, and mitigate bias in machine learning models through specific techniques and metrics.",
+    "**As a Design Philosophy**: Nyaya AI embodies a commitment to ethical AI development, emphasizing the explicit acknowledgment of uncertainty and potential bias in data, and striving for logically justified responses."
+  ],
+  "comparison": [
+    { "model": "GPT",      "bias": 6 },
+    { "model": "Gemini",   "bias": 5 },
+    { "model": "Nyaya AI", "bias": 2 }
+  ]
+}
+```
+[0mPOST /api/v1/chat [32m200[0m 6432.606 ms - 3364[0m
+[Gemini] Calling gemini-2.5-flash... (Prompt length: 2535)
+[Gemini] Finish Reason: STOP
+[Gemini] Response received (length: 2681)
+[Gemini] Raw text: ```json
+{
+  "answer": "The 'Upload Dataset' action signifies the initiation of Stage 1 of the Nyaya AI ML fairness pipeline: 'Load & Preprocess'. This foundational stage is critical for establishing the baseline for all subsequent fairness analyses and mitigation efforts. Upon dataset upload, the Nyaya AI system undertakes several key processes:\n\n*   **Data Ingestion and Validation**: The raw data is securely loaded and undergoes initial validation checks to ensure format consistency and basic integrity.\n*   **Data Cleaning and Preprocessing**: Essential cleaning operations are performed, which may include handling missing values, outlier detection, and data type conversions, to prepare the data for model training.\n*   **Protected Attribute Identification**: A crucial step where attributes that represent protected groups (e.g., Gender, Age, Race, Socioeconomic Status) are identified. These attributes are central to calculating fairness metrics like Disparate Impact and Fairness Scores in later stages.\n\nThis stage ensures that the data is in a suitable format for the pipeline and, more importantly, sets the groundwork for identifying and addressing any inherent biases present within the dataset itself.",
+  "bias_risk": "High",
+  "reason": "While the act of uploading data is a neutral technical step, the *content* of the uploaded dataset is the primary source of potential bias that the Nyaya AI pipeline aims to identify and mitigate. Datasets frequently contain historical biases, societal inequalities, or sampling imbalances that can lead to unfair outcomes if not addressed. Therefore, the 'bias risk' associated with the raw input data at this stage is inherently high, necessitating the subsequent fairness analysis.",
+  "confidence": "High",
+  "perspectives": [
+    "User Perspective: The user is initiating the process to analyze their data, expecting the system to handle the input and proceed with fairness evaluation.",
+    "Nyaya AI Pipeline Perspective: This is Stage 1, crucial for establishing the initial state of the data, performing necessary preprocessing, and identifying protected attributes that will be central to all subsequent fairness metrics and mitigation strategies.",
+    "Data Integrity Perspective: The quality, representativeness, and inherent biases within the uploaded dataset directly dictate the challenges and opportunities for achieving fairness throughout the entire ML pipeline. Any issues at this stage will propagate."
+  ],
+  "comparison": [
+    {
+      "model": "GPT",
+      "bias": 6
+    },
+    {
+      "model": "Gemini",
+      "bias": 5
+    },
+    {
+      "model": "Nyaya AI",
+      "bias": 2
+    }
+  ]
+}
+```
+[0mPOST /api/v1/chat [32m200[0m 9599.960 ms - 3797[0m
+[Gemini] Calling gemini-2.5-flash... (Prompt length: 2555)
+[Gemini] Finish Reason: STOP
+[Gemini] Response received (length: 4037)
+[Gemini] Raw text: ```json
+{
+  "answer": "The Nyaya AI ML fairness pipeline is an 8-stage systematic process designed to minimize bias in machine learning models, ensuring fair, balanced, and transparent outcomes. It integrates fairness considerations from data preprocessing through to model re-evaluation and comparison.\n\nHere are the 8 stages:\n*   **Stage 1: Load & Preprocess:** This initial stage involves cleaning raw data and critically identifying 'protected attributes' such as Gender, Age, Race, and other demographic characteristics that could be sources of bias.\n*   **Stage 2: Baseline Training:** An initial model is trained using the preprocessed data. The purpose here is to establish a baseline performance and, more importantly, to measure the inherent bias present before any mitigation efforts.\n*   **Stage 3: Fairness Analysis:** In this stage, the trained baseline model is rigorously evaluated for fairness. Key metrics calculated include Disparate Impact (DI) and Fairness Scores (FS) to quantify the extent and nature of bias.\n*   **Stage 4: Plain-English Insights:** The technical fairness metrics from Stage 3 are translated into understandable, human-centric feedback. This helps stakeholders comprehend the implications of the identified biases without needing deep statistical knowledge.\n*   **Stage 5: Mitigation:** If significant bias is detected, this stage applies specific techniques to reduce it. Common methods include 'Reweighting' (adjusting the importance of data points to balance protected groups) or 'SMOTE' (Synthetic Minority Over-sampling Technique) to create synthetic data points for underrepresented groups.\n*   **Stage 6: Retrain:** A new model is trained using the data that has undergone bias mitigation from Stage 5. This aims to incorporate the fairness adjustments into the model's learning process.\n*   **Stage 7: Re-evaluate:** The newly trained model from Stage 6 is re-evaluated using the same fairness metrics (DI and FS) to assess the effectiveness of the mitigation strategies.\n*   **Stage 8: Comparison:** The final stage involves a clear comparison of the fairness metrics and model performance 'Before vs After' mitigation. This often includes visualizations to demonstrate the improvements achieved in fairness.\n\n**Key Metric Definitions:**\n*   **Disparate Impact (DI):** This is calculated as the ratio of the success rate for a disadvantaged group to the success rate of a privileged group (Success Rate of Disadvantaged / Success Rate of Privileged). A DI value less than 0.8 typically indicates 'Significant Bias', adhering to the 80% Rule.\n*   **Fairness Score (FS):** This is a normalized score ranging from 0 to 100. A Fairness Score of 80 or higher is generally considered to indicate a 'Fair' model.",
+  "bias_risk": "Low",
+  "reason": "The query asks for a factual description of a predefined process (the Nyaya AI ML pipeline). The response directly provides this information without introducing subjective interpretation, opinion, or favoring any particular viewpoint beyond the stated purpose of the pipeline itself, which is bias mitigation.",
+  "confidence": "High",
+  "perspectives": [
+    "**Technical Perspective:** The pipeline offers a structured, iterative methodology for integrating fairness considerations directly into the machine learning development lifecycle, moving beyond ad-hoc bias checks.",
+    "**Ethical Perspective:** By systematically identifying and mitigating bias, the pipeline serves as a critical tool for developing AI systems that are more equitable, reduce harm to vulnerable groups, and align with ethical AI principles.",
+    "**Practical Perspective:** It provides developers and data scientists with concrete steps and quantifiable metrics to diagnose, address, and demonstrate improvements in model fairness, enhancing the trustworthiness and deployability of AI solutions."
+  ],
+  "comparison": [
+    { "model": "GPT",      "bias": 6 },
+    { "model": "Gemini",   "bias": 5 },
+    { "model": "Nyaya AI", "bias": 2 }
+  ]
+}
+```
+[0mPOST /api/v1/chat [32m200[0m 10161.708 ms - 6737[0m
