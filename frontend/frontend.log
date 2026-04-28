@@ -36,3 +36,14 @@
  GET /app 200 in 26ms
  GET / 200 in 42ms
  GET /app 200 in 77ms
+ GET / 200 in 79ms
+ GET /app 200 in 1025ms
+ ✓ Compiled in 1435ms (4410 modules)
+ GET /app 200 in 99ms
+ ✓ Compiled in 798ms (4410 modules)
+ GET /app 200 in 37ms
+ ✓ Compiled in 765ms (4410 modules)
+ GET /app 200 in 36ms
+ GET / 200 in 34ms
+ GET /app 200 in 119ms
+ GET /app 200 in 413ms

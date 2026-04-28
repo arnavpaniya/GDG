@@ -21,7 +21,7 @@ const ChatInput = ({ onSendMessage, onFileUpload, isLoading }) => {
   };
 
   return (
-    <div className="sticky bottom-0 bg-gradient-to-t from-bg-primary via-bg-primary to-transparent pt-4 pb-4 px-4">
+    <div className="bg-gradient-to-t from-bg-primary via-bg-primary to-transparent pt-4 pb-6 px-4 z-10">
       <div className="max-w-[800px] mx-auto">
         <form 
           onSubmit={handleSubmit}

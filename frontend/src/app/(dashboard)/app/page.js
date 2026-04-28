@@ -170,7 +170,7 @@ export default function AppHome() {
 
   if (currentChatId) {
     return (
-      <div className="flex-1 flex flex-col relative">
+      <div className="flex-1 flex flex-col relative h-full">
         {/* Back to Home Button */}
         <button
           onClick={() => router.push('/')}

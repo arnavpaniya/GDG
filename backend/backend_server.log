@@ -133,3 +133,98 @@
 }
 ```
 [0mPOST /api/v1/chat [32m200[0m 10161.708 ms - 6737[0m
+[Gemini] Calling gemini-2.5-flash... (Prompt length: 2535)
+[Gemini] Finish Reason: STOP
+[Gemini] Response received (length: 2642)
+[Gemini] Raw text: ```json
+{
+  "answer": "Upon 'uploading' a dataset into the Nyaya AI ML fairness pipeline, the system initiates Stage 1: Load & Preprocess. This crucial initial phase involves several steps to prepare the data for subsequent fairness analysis and model training. Key activities include:\n*   **Data Cleaning:** Identifying and handling missing values, outliers, and inconsistencies to ensure data quality and integrity.\n*   **Feature Engineering:** Transforming raw data into features suitable for machine learning models.\n*   **Protected Attribute Identification:** Explicitly identifying and categorizing 'protected attributes' within the dataset (e.g., Gender, Age, Race, Socioeconomic Status). These attributes are critical for measuring and mitigating potential biases later in the pipeline.\n*   **Data Validation:** Ensuring the dataset conforms to expected schemas and types.\nThis stage lays the foundation for a robust fairness analysis by ensuring the data is clean and relevant attributes are correctly identified.",
+  "bias_risk": "High",
+  "reason": "Any raw dataset, upon upload, carries a high potential for inherent biases reflecting historical, societal, or data collection biases. These biases, if not identified and mitigated, can lead to unfair or discriminatory outcomes in ML models. The Nyaya AI pipeline is specifically designed to detect and address these risks starting from Stage 1.",
+  "confidence": "High",
+  "perspectives": [
+    "Perspective 1 (Technical Process): The primary perspective on 'Upload Dataset' within the Nyaya AI pipeline is the initiation of Stage 1: Load & Preprocess, focusing on data cleaning, feature engineering, and crucial identification of protected attributes to prepare for fairness analysis.",
+    "Perspective 2 (Inherent Bias Potential): From a fairness standpoint, any uploaded dataset is presumed to contain potential biases (e.g., historical discrimination, sampling bias, measurement error) that the subsequent stages of the Nyaya AI pipeline are designed to detect and mitigate. The 'upload' itself is neutral, but the *content* is not.",
+    "Perspective 3 (Data Quality Responsibility): While the pipeline processes the data, the quality and representativeness of the uploaded dataset are paramount. A poorly sourced or incomplete dataset, even if processed, can limit the effectiveness of bias mitigation, highlighting the user's responsibility in providing high-quality input."
+  ],
+  "comparison": [
+    {
+      "model": "GPT",
+      "bias": 6
+    },
+    {
+      "model": "Gemini",
+      "bias": 5
+    },
+    {
+      "model": "Nyaya AI",
+      "bias": 2
+    }
+  ]
+}
+```
+[0mPOST /api/v1/chat [32m200[0m 9209.346 ms - 3559[0m
+[Error] POST /api/v1/analyze/upload Error: CSV is missing required columns: shortlisted
+    at validateHeaders (/Users/arnavpaniya/GDG/backend/src/utils/csvParser.js:61:11)
+    at loadDataset (/Users/arnavpaniya/GDG/backend/src/services/dataService.js:34:3)
+    at uploadAndAnalyze (/Users/arnavpaniya/GDG/backend/src/controllers/analysisController.js:49:22)
+    at Layer.handle [as handle_request] (/Users/arnavpaniya/GDG/backend/node_modules/express/lib/router/layer.js:95:5)
+    at next (/Users/arnavpaniya/GDG/backend/node_modules/express/lib/router/route.js:149:13)
+    at /Users/arnavpaniya/GDG/backend/src/middleware/uploadMiddleware.js:50:22
+    at done (/Users/arnavpaniya/GDG/backend/node_modules/multer/lib/make-middleware.js:47:7)
+    at indicateDone (/Users/arnavpaniya/GDG/backend/node_modules/multer/lib/make-middleware.js:51:68)
+    at Multipart.<anonymous> (/Users/arnavpaniya/GDG/backend/node_modules/multer/lib/make-middleware.js:168:7)
+    at Multipart.emit (node:events:508:28)
+[0mPOST /api/v1/analyze/upload [31m500[0m 14.888 ms - 1057[0m
+[Gemini] Calling gemini-2.5-flash... (Prompt length: 2599)
+[Gemini] Finish Reason: STOP
+[Gemini] Response received (length: 4154)
+[Gemini] Raw text: ```json
+{
+  "answer": "I am unable to access or process the `test_bias_data.csv` file you mentioned, as my current capabilities do not include direct file uploads or access to local file systems. Therefore, I cannot perform a specific analysis of the data to identify its main bias risks.\n\nHowever, if the data were accessible, as Nyaya AI, I would leverage my ML fairness pipeline to systematically identify and analyze potential biases. Here's how I would approach it and what general bias risks I would look for:\n\n*   **Stage 1: Load & Preprocess**: I would first load the data and preprocess it, which includes identifying and cleaning protected attributes such as 'Gender', 'Age', 'Race', 'Socioeconomic Status', or 'Ethnicity'. This stage is crucial for understanding which groups might be disproportionately affected.\n*   **Stage 3: Fairness Analysis**: After initial processing, I would calculate key fairness metrics like Disparate Impact (DI) and Fairness Scores (FS). DI measures the ratio of success rates between disadvantaged and privileged groups. A DI below 0.8 would indicate significant bias (the 80% Rule). The Fairness Score (0-100) would provide a normalized view, with scores below 80 suggesting unfairness.\n*   **Plain-English Insights**: These metrics would then be translated into human-centric feedback, highlighting specific groups experiencing disadvantage and the nature of the bias.\n\n**General Bias Risks in Data (if the data were available):**\n\n*   **Historical Bias**: The data might reflect past societal biases, leading to discriminatory outcomes even if protected attributes are not explicitly used in the model. For example, if historical loan approval data shows lower approval rates for certain demographic groups, a model trained on this data might perpetuate this bias.\n*   **Representation Bias (or Underrepresentation Bias)**: Certain groups within the dataset might be underrepresented, leading the model to perform poorly or unfairly for those groups due to insufficient training examples. This can result in a lack of accuracy or unfair outcomes for minority groups.\n*   **Measurement Bias**: Inaccuracies or inconsistencies in how data was collected or labeled could introduce bias. For instance, if a 'success' metric is defined differently or measured with varying precision across different groups.\n*   **Sampling Bias**: The way the data was collected might not be representative of the true population, leading to skewed distributions for certain attributes or outcomes.\n\nWithout access to the specific `test_bias_data.csv`, these are general considerations based on common challenges in machine learning datasets. A thorough analysis would require direct access to the data.",
+  "bias_risk": "High",
+  "reason": "I cannot access the user's uploaded data (`test_bias_data.csv`), which is essential for providing a specific analysis of bias risks. My response is therefore generalized, based on common types of data bias, rather than an analysis of the specific dataset. This introduces a high risk of not addressing the user's specific data context.",
+  "confidence": "Low",
+  "perspectives": [
+    "**Perspective 1 (General Data Bias)**: Without specific data, common risks include historical bias (data reflecting past societal inequalities), representation bias (underrepresentation of certain groups), and measurement bias (inconsistent data collection). These biases can lead to unfair model outcomes.",
+    "**Perspective 2 (Nyaya AI Pipeline Application)**: If data were available, the Nyaya AI pipeline would identify bias through Stage 1 (identifying protected attributes) and Stage 3 (calculating Disparate Impact and Fairness Scores). This systematic approach quantifies bias.",
+    "**Perspective 3 (Impact of Missing Data)**: The inability to access the specific dataset means any discussion of 'main bias risks' is theoretical and generalized, lacking the concrete evidence needed for a precise and actionable assessment."
+  ],
+  "comparison": [
+    { "model": "GPT",      "bias": 6 },
+    { "model": "Gemini",   "bias": 5 },
+    { "model": "Nyaya AI", "bias": 2 }
+  ]
+}
+```
+[0mPOST /api/v1/chat [32m200[0m 11239.383 ms - 6826[0m
+[Gemini] Calling gemini-2.5-flash... (Prompt length: 2758)
+Gemini call failed: [GoogleGenerativeAI Error]: Error fetching from https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash:generateContent: [503 Service Unavailable] This model is currently experiencing high demand. Spikes in demand are usually temporary. Please try again later.
+[0mPOST /api/v1/chat [32m200[0m 2742.317 ms - 421[0m
+[Gemini] Calling gemini-2.5-flash... (Prompt length: 2542)
+[Gemini] Finish Reason: STOP
+[Gemini] Response received (length: 2899)
+[Gemini] Raw text: ```json
+{
+  "answer": "The question of whether Narendra Modi or Donald Trump is 'good' is highly subjective and depends entirely on the criteria used for evaluation, individual political ideologies, and the specific policies or actions being considered. Both leaders have presided over significant periods in their respective countries and have garnered strong support as well as considerable opposition.\n\nAs Nyaya AI, our goal is to minimize bias by presenting multiple perspectives and acknowledging the inherent subjectivity of such a query. There is no universally agreed-upon definition of 'good' in political leadership; what one person considers beneficial, another might view as detrimental.",
+  "bias_risk": "High",
+  "reason": "The user's query asks for a subjective evaluation ('good') of political leaders, which is inherently opinion-based and controversial. Any attempt to provide a definitive answer would introduce significant bias. The 'goodness' of a leader is perceived differently based on individual values, political leanings, economic status, social identity, and the specific impacts of their policies.",
+  "confidence": "High",
+  "perspectives": [
+    "**Perspective on Narendra Modi (Pro-Arguments):** Supporters often point to his focus on economic development, infrastructure projects, national security initiatives, and efforts to enhance India's global standing. Policies like 'Make in India' and various welfare schemes are frequently cited as positives, along with his strong leadership style.",
+    "**Perspective on Narendra Modi (Con-Arguments):** Critics raise concerns about issues such as democratic backsliding, human rights records, social polarization, economic inequality, and the impact of certain policies (e.g., demonetization, Citizenship Amendment Act) on minority communities and civil liberties. Media freedom and institutional independence are also often cited as areas of concern.",
+    "**Perspective on Donald Trump (Pro-Arguments):** Advocates frequently highlight his economic policies, including tax cuts and deregulation, which they argue stimulated job growth and business investment. His appointments of conservative judges, 'America First' foreign policy stance, and efforts on border security are also often praised by his base.",
+    "**Perspective on Donald Trump (Con-Arguments):** Opponents often criticize his rhetoric, which they argue fueled social division and political polarization. Concerns are frequently raised about his challenges to democratic norms, handling of international relations, withdrawal from global agreements, and responses to major crises (e.g., the COVID-19 pandemic). His impact on institutions and civil discourse is also a common point of contention."
+  ],
+  "comparison": [
+    { "model": "GPT",      "bias": 6 },
+    { "model": "Gemini",   "bias": 5 },
+    { "model": "Nyaya AI", "bias": 2 }
+  ]
+}
+```
+[0mPOST /api/v1/chat [32m200[0m 8528.855 ms - 3526[0m
+[Gemini] Calling gemini-2.5-flash... (Prompt length: 2532)
+Gemini call failed: [GoogleGenerativeAI Error]: Error fetching from https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash:generateContent: fetch failed
+[0mPOST /api/v1/chat [32m200[0m 10129.340 ms - 421[0m
+[31m[nodemon] app crashed - waiting for file changes before starting...[39m

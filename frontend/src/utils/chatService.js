@@ -55,7 +55,24 @@ export const createNewChat = async (userId, title = 'New Analysis') => {
 
 export const deleteChat = async (userId, chatId) => {
   if (!userId || !chatId || !db) return;
-  await deleteDoc(doc(db, `users/${userId}/chats`, chatId));
+  
+  try {
+    const messagesQuery = query(collection(db, `users/${userId}/chats/${chatId}/messages`));
+    const messagesSnapshot = await getDocs(messagesQuery);
+    
+    const batch = writeBatch(db);
+    messagesSnapshot.forEach((msgDoc) => {
+      batch.delete(msgDoc.ref);
+    });
+    
+    // Delete the chat document itself
+    batch.delete(doc(db, `users/${userId}/chats`, chatId));
+    
+    await batch.commit();
+  } catch (error) {
+    console.error("Firestore deleteChat error:", error);
+    throw error;
+  }
 };
 
 export const subscribeToMessages = (userId, chatId, callback) => {

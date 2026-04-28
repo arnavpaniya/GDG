@@ -25,6 +25,10 @@ const useStore = create((set) => ({
     set({ theme });
   },
   addChat: (chat) => set((state) => ({ chats: [chat, ...state.chats] })),
+  removeChat: (chatId) => set((state) => ({ 
+    chats: state.chats.filter(c => c.id !== chatId) 
+  })),
+  clearChats: () => set({ chats: [], currentChatId: null, messages: [] }),
 }));
 
 export default useStore;
