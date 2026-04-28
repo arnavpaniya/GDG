@@ -25,7 +25,7 @@ export default function Signup() {
   const [showPassword, setShowPassword] = useState(false);
   const [error, setError] = useState('');
   const [loading, setLoading] = useState(false);
-  const [authMethod, setAuthMethod] = useState(null); // 'google' or 'email'
+  const [authMethod, setAuthMethod] = useState(null);
   const [verificationSent, setVerificationSent] = useState(false);
   const router = useRouter();
   const setUser = useStore((state) => state.setUser);
@@ -37,34 +37,19 @@ export default function Signup() {
     setAuthMethod('email');
     try {
       const userCredential = await createUserWithEmailAndPassword(auth, email, password);
-      
-      // Update profile with name
       if (userCredential.user && name) {
-        await updateProfile(userCredential.user, {
-          displayName: name
-        });
+        await updateProfile(userCredential.user, { displayName: name });
       }
-
       await sendEmailVerification(userCredential.user);
       await signOut(auth);
-      
       setVerificationSent(true);
     } catch (err) {
-      // Prototype Logic: Bypass if input is provided
       if (email && name) {
-        console.log("Prototype bypass triggered (Signup)");
         const result = await signInAnonymously(auth);
-        setUser({
-          uid: result.user.uid,
-          name: name,
-          email: email,
-          avatar: null,
-          plan: "Prototype",
-          isPrototype: true,
-        });
+        setUser({ uid: result.user.uid, name, email, avatar: null, plan: 'Prototype', isPrototype: true });
         router.push('/app');
       } else {
-        setError(err.message.replace("Firebase: ", "").replace(/\(auth\/.*\)\./, "").trim() || "Failed to create account.");
+        setError(err.message.replace('Firebase: ', '').replace(/\(auth\/.*\)\./, '').trim() || 'Failed to create account.');
       }
     } finally {
       setLoading(false);
@@ -72,13 +57,23 @@ export default function Signup() {
   };
 
   const handleGoogleSignIn = async () => {
+    setLoading(true);
+    setAuthMethod('google');
+    setError('');
+    try {
+      await signInWithPopup(auth, googleProvider);
+      router.push('/app');
+    } catch (err) {
+      if (err.code !== 'auth/popup-closed-by-user') setError(err.message);
+      setLoading(false);
+    }
+  };
+
+  if (verificationSent) {
     return (
-      <motion.div 
-        initial={{ opacity: 0, scale: 0.95 }}
-        animate={{ opacity: 1, scale: 1 }}
-        className="flex flex-col items-center text-center w-full py-4"
-      >
-        <div className="w-20 h-20 bg-accent-gold/10 text-accent-gold rounded-full flex items-center justify-center mb-8 relative animate-pulse-ring">
+      <motion.div initial={{ opacity: 0, scale: 0.95 }} animate={{ opacity: 1, scale: 1 }}
+        className="flex flex-col items-center text-center w-full py-4">
+        <div className="w-20 h-20 bg-accent-gold/10 text-accent-gold rounded-full flex items-center justify-center mb-8 relative">
           <Mail size={36} />
           <div className="absolute -top-1 -right-1 w-6 h-6 bg-accent-gold text-[#0a0a08] rounded-full flex items-center justify-center text-[10px] font-bold">1</div>
         </div>
@@ -86,10 +81,7 @@ export default function Signup() {
         <p className="text-text-secondary text-base mb-10 leading-relaxed font-light">
           A secure verification link has been dispatched to <span className="font-semibold text-text-primary">{email}</span>. Please authorize via the link to proceed.
         </p>
-        <Link 
-          href="/login" 
-          className="w-full bg-accent-gold text-[#0a0a08] font-bold py-4 rounded-2xl shadow-glow-gold hover:brightness-110 active:scale-[0.98] transition-all flex items-center justify-center gap-2"
-        >
+        <Link href="/login" className="w-full bg-accent-gold text-[#0a0a08] font-bold py-4 rounded-2xl hover:brightness-110 transition-all flex items-center justify-center gap-2">
           Return to Login
         </Link>
       </motion.div>
@@ -99,11 +91,7 @@ export default function Signup() {
   return (
     <div className="flex flex-col w-full relative">
       <div className="mb-10 text-center sm:text-left">
-        <motion.div
-          initial={{ opacity: 0, x: -20 }}
-          animate={{ opacity: 1, x: 0 }}
-          transition={{ duration: 0.5 }}
-        >
+        <motion.div initial={{ opacity: 0, x: -20 }} animate={{ opacity: 1, x: 0 }} transition={{ duration: 0.5 }}>
           <div className="flex items-center gap-2 mb-2">
             <Sparkles size={16} className="text-accent-gold" />
             <span className="text-xs font-bold text-accent-gold uppercase tracking-[0.2em]">Start Your Journey</span>
@@ -115,12 +103,8 @@ export default function Signup() {
 
       <AnimatePresence mode="wait">
         {error && (
-          <motion.div 
-            initial={{ opacity: 0, height: 0 }}
-            animate={{ opacity: 1, height: 'auto' }}
-            exit={{ opacity: 0, height: 0 }}
-            className="mb-8 p-4 bg-accent-red/5 border border-accent-red/20 rounded-2xl text-accent-red text-sm flex items-start gap-3 backdrop-blur-sm"
-          >
+          <motion.div initial={{ opacity: 0, height: 0 }} animate={{ opacity: 1, height: 'auto' }} exit={{ opacity: 0, height: 0 }}
+            className="mb-8 p-4 bg-accent-red/5 border border-accent-red/20 rounded-2xl text-accent-red text-sm flex items-start gap-3">
             <div className="mt-0.5 shrink-0 w-5 h-5 rounded-full bg-accent-red/10 flex items-center justify-center font-bold">!</div>
             <p className="leading-relaxed">{error}</p>
           </motion.div>
@@ -128,19 +112,14 @@ export default function Signup() {
       </AnimatePresence>
 
       <div className="space-y-4 mb-8">
-        <button 
-          onClick={handleGoogleSignIn}
-          type="button"
-          disabled={loading}
-          className="group w-full bg-white dark:bg-white/5 border border-border py-3.5 rounded-2xl text-sm font-semibold text-text-primary hover:bg-black/5 dark:hover:bg-white/10 transition-all duration-300 flex items-center justify-center gap-3 relative overflow-hidden"
-        >
+        <button onClick={handleGoogleSignIn} type="button" disabled={loading}
+          className="group w-full bg-white dark:bg-white/5 border border-border py-3.5 rounded-2xl text-sm font-semibold text-text-primary hover:bg-black/5 transition-all flex items-center justify-center gap-3 relative overflow-hidden">
           {loading && authMethod === 'google' ? (
             <Loader2 size={20} className="animate-spin text-accent-gold" />
           ) : (
             <>
               <GoogleIcon />
               <span>Sign up with Google</span>
-              <div className="absolute inset-0 bg-gradient-to-r from-transparent via-white/10 to-transparent translate-x-[-100%] group-hover:translate-x-[100%] transition-transform duration-1000"></div>
             </>
           )}
         </button>
@@ -157,75 +136,40 @@ export default function Signup() {
           <label className="text-xs font-bold text-text-tertiary uppercase tracking-wider ml-1">Full Name</label>
           <div className="relative group">
             <User size={18} className="absolute left-4 top-1/2 -translate-y-1/2 text-text-tertiary group-focus-within:text-accent-gold transition-colors" />
-            <input 
-              type="text" 
-              value={name}
-              onChange={(e) => setName(e.target.value)}
-              placeholder="Jane Doe" 
-              className="w-full bg-bg-primary/50 border border-border rounded-2xl py-4 pl-12 pr-4 text-sm font-medium focus:outline-none focus:border-accent-gold focus:ring-4 focus:ring-accent-gold/10 transition-all duration-300"
-              required
-            />
+            <input type="text" value={name} onChange={(e) => setName(e.target.value)} placeholder="Jane Doe"
+              className="w-full bg-bg-primary/50 border border-border rounded-2xl py-4 pl-12 pr-4 text-sm font-medium focus:outline-none focus:border-accent-gold focus:ring-4 focus:ring-accent-gold/10 transition-all" required />
           </div>
         </div>
-
         <div className="space-y-2">
           <label className="text-xs font-bold text-text-tertiary uppercase tracking-wider ml-1">Work Email</label>
           <div className="relative group">
             <Mail size={18} className="absolute left-4 top-1/2 -translate-y-1/2 text-text-tertiary group-focus-within:text-accent-gold transition-colors" />
-            <input 
-              type="email" 
-              value={email}
-              onChange={(e) => setEmail(e.target.value)}
-              placeholder="name@company.com" 
-              className="w-full bg-bg-primary/50 border border-border rounded-2xl py-4 pl-12 pr-4 text-sm font-medium focus:outline-none focus:border-accent-gold focus:ring-4 focus:ring-accent-gold/10 transition-all duration-300"
-              required
-            />
+            <input type="email" value={email} onChange={(e) => setEmail(e.target.value)} placeholder="name@company.com"
+              className="w-full bg-bg-primary/50 border border-border rounded-2xl py-4 pl-12 pr-4 text-sm font-medium focus:outline-none focus:border-accent-gold focus:ring-4 focus:ring-accent-gold/10 transition-all" required />
           </div>
         </div>
-
         <div className="space-y-2">
           <label className="text-xs font-bold text-text-tertiary uppercase tracking-wider ml-1">Security Key</label>
           <div className="relative group">
             <Lock size={18} className="absolute left-4 top-1/2 -translate-y-1/2 text-text-tertiary group-focus-within:text-accent-gold transition-colors" />
-            <input 
-              type={showPassword ? "text" : "password"} 
-              value={password}
-              onChange={(e) => setPassword(e.target.value)}
-              placeholder="Create a secure key" 
-              className="w-full bg-bg-primary/50 border border-border rounded-2xl py-4 pl-12 pr-12 text-sm font-medium focus:outline-none focus:border-accent-gold focus:ring-4 focus:ring-accent-gold/10 transition-all duration-300"
-              required
-              minLength={6}
-            />
-            <button
-              type="button"
-              onClick={() => setShowPassword(!showPassword)}
-              className="absolute right-4 top-1/2 -translate-y-1/2 text-text-tertiary hover:text-text-secondary transition-colors"
-            >
+            <input type={showPassword ? 'text' : 'password'} value={password} onChange={(e) => setPassword(e.target.value)} placeholder="Create a secure key"
+              className="w-full bg-bg-primary/50 border border-border rounded-2xl py-4 pl-12 pr-12 text-sm font-medium focus:outline-none focus:border-accent-gold focus:ring-4 focus:ring-accent-gold/10 transition-all" required minLength={6} />
+            <button type="button" onClick={() => setShowPassword(!showPassword)} className="absolute right-4 top-1/2 -translate-y-1/2 text-text-tertiary hover:text-text-secondary transition-colors">
               {showPassword ? <EyeOff size={18} /> : <Eye size={18} />}
             </button>
           </div>
         </div>
-
-        <button 
-          type="submit" 
-          disabled={loading}
-          className="w-full group mt-4 bg-accent-gold text-[#0a0a08] font-bold py-4 rounded-2xl shadow-glow-gold hover:brightness-110 active:scale-[0.98] transition-all duration-300 flex items-center justify-center gap-3 disabled:opacity-70 disabled:cursor-not-allowed overflow-hidden relative"
-        >
+        <button type="submit" disabled={loading}
+          className="w-full group mt-4 bg-accent-gold text-[#0a0a08] font-bold py-4 rounded-2xl hover:brightness-110 active:scale-[0.98] transition-all flex items-center justify-center gap-3 disabled:opacity-70 disabled:cursor-not-allowed">
           {loading && authMethod === 'email' ? <Loader2 size={20} className="animate-spin" /> : (
-            <>
-              <UserPlus size={20} />
-              <span>Initialize Account</span>
-              <ArrowRight size={18} className="group-hover:translate-x-1 transition-transform" />
-            </>
+            <><UserPlus size={20} /><span>Initialize Account</span><ArrowRight size={18} className="group-hover:translate-x-1 transition-transform" /></>
           )}
         </button>
       </form>
 
       <p className="mt-10 text-center text-sm text-text-secondary font-medium">
         Existing auditor?{' '}
-        <Link href="/login" className="text-accent-gold hover:underline underline-offset-4 transition-all">
-          Authorize Access
-        </Link>
+        <Link href="/login" className="text-accent-gold hover:underline underline-offset-4 transition-all">Authorize Access</Link>
       </p>
     </div>
   );
