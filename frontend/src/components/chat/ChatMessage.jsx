@@ -275,7 +275,7 @@ const ChatMessage = ({ message }) => {
                       </div>
                     )}
                     <div className="flex justify-center bg-bg-surface p-6 rounded-xl border border-border shadow-soft">
-                      <FairnessScore3D score={message.analysis.score} />
+                      <FairnessScore3D score={message.analysis.score ?? message.analysis.fairness?.score ?? 0} />
                     </div>
                     <div className="flex flex-col gap-2">
                       {message.analysis.findings?.map((finding, index) => (

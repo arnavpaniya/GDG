@@ -7,9 +7,8 @@
  * Falls back to smart keyword-aware demo responses if API is unavailable.
  */
 
-const { GEMINI_API_KEY, PYTHON_SERVICE_URL } = require("../config/env");
+const { MISTRAL_API_KEY, PYTHON_SERVICE_URL } = require("../config/env");
 const axios = require("axios");
-const { GoogleGenerativeAI } = require("@google/generative-ai");
 
 // ── Response helper ───────────────────────────────────────────────────────── //
 function ok(res, data) {
@@ -269,28 +268,31 @@ async function fetchMLMetrics(context) {
   }
 }
 
-// ── Call Gemini via official SDK ────────────────────────────────────────── //
-async function callGemini(prompt) {
-  if (!GEMINI_API_KEY) throw new Error("GEMINI_API_KEY is not configured");
+// ── Call Mistral via API ────────────────────────────────────────── //
+async function callLLM(prompt) {
+  if (!MISTRAL_API_KEY) throw new Error("MISTRAL_API_KEY is not configured");
 
-  const modelName = "gemini-1.5-flash";
-  console.log(`[Gemini] Calling ${modelName}...`);
+  console.log(`[Mistral] Calling mistral-large-latest...`);
 
-  const genAI = new GoogleGenerativeAI(GEMINI_API_KEY);
-  const model = genAI.getGenerativeModel({ 
-    model: modelName,
-    generationConfig: {
-      temperature: 0.1, 
-      topP: 0.8,
-      maxOutputTokens: 2048,
+  const response = await axios.post(
+    "https://api.mistral.ai/v1/chat/completions",
+    {
+      model: "mistral-large-latest",
+      messages: [{ role: "user", content: prompt }],
+      temperature: 0.1,
+      top_p: 0.8,
+      max_tokens: 2048,
+    },
+    {
+      headers: {
+        "Content-Type": "application/json",
+        "Authorization": `Bearer ${MISTRAL_API_KEY}`,
+      },
     }
-  });
+  );
 
-  const result = await model.generateContent(prompt);
-  const response = await result.response;
-  const text = response.text();
-  
-  if (!text) throw new Error("Empty response from Gemini");
+  const text = response.data.choices[0].message.content;
+  if (!text) throw new Error("Empty response from Mistral");
   return text.trim();
 }
 
@@ -327,19 +329,19 @@ async function handleChat(req, res) {
       mlContext = await fetchMLMetrics(context);
     }
 
-    // 2. Try Gemini with Hybrid Context
-    if (GEMINI_API_KEY) {
+    // 2. Try LLM with Hybrid Context
+    if (MISTRAL_API_KEY) {
       try {
         let fullPrompt = `${NYAYA_SYSTEM_PROMPT}\n\n`;
         if (mlContext) fullPrompt += `[ML_SERVICE_CONTEXT]\n${JSON.stringify(mlContext, null, 2)}\n\n`;
         if (context) fullPrompt += `[USER_PROVIDED_CONTEXT]\n${JSON.stringify(context, null, 2)}\n\n`;
         fullPrompt += `[USER QUERY]\n${message}\n\n[REMINDER: Respond with ONLY a valid JSON object.]`;
 
-        const rawText = await callGemini(fullPrompt);
+        const rawText = await callLLM(fullPrompt);
         const structured = parseStructured(rawText);
 
         if (structured) {
-          console.log(`[Chat] ✅ Gemini success for: "${message.substring(0, 30)}..."`);
+          console.log(`[Chat] ✅ LLM success for: "${message.substring(0, 30)}..."`);
           return ok(res, { 
             text: structured.answer, 
             structured,
@@ -347,7 +349,7 @@ async function handleChat(req, res) {
           });
         }
       } catch (apiErr) {
-        console.warn(`[Chat] Gemini API failed: ${apiErr.message}`);
+        console.warn(`[Chat] LLM API failed: ${apiErr.message}`);
       }
     }
 
