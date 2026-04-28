@@ -80,7 +80,7 @@ const { GoogleGenerativeAI } = require("@google/generative-ai");
 async function callGemini(prompt) {
   if (!GEMINI_API_KEY) throw new Error("GEMINI_API_KEY is not configured");
 
-  const modelName = "gemini-2.5-flash";
+  const modelName = "gemini-1.5-flash";
   console.log(`[Gemini] Calling ${modelName}... (Prompt length: ${prompt.length})`);
 
   const genAI = new GoogleGenerativeAI(GEMINI_API_KEY);
@@ -93,19 +93,27 @@ async function callGemini(prompt) {
     }
   });
 
-  const result = await model.generateContent(prompt);
-  const response = await result.response;
-  
-  // Log finish reason if possible
-  const candidate = response.candidates?.[0];
-  console.log(`[Gemini] Finish Reason: ${candidate?.finishReason}`);
-  
-  const text = response.text();
-  
-  console.log(`[Gemini] Response received (length: ${text?.length || 0})`);
-  
-  if (!text) throw new Error("Empty response from Gemini");
-  return text.trim();
+  try {
+    const result = await model.generateContent(prompt);
+    const response = await result.response;
+    
+    // Log finish reason if possible
+    const candidate = response.candidates?.[0];
+    console.log(`[Gemini] Finish Reason: ${candidate?.finishReason}`);
+    
+    const text = response.text();
+    
+    console.log(`[Gemini] Response received (length: ${text?.length || 0})`);
+    
+    if (!text) throw new Error("Empty response from Gemini");
+    return text.trim();
+  } catch (err) {
+    console.error(`[Gemini] API Error: ${err.message}`);
+    if (err.response) {
+      console.error(`[Gemini] Error details:`, JSON.stringify(err.response, null, 2));
+    }
+    throw err;
+  }
 }
 
 // ── Parse and sanitize the AI response ───────────────────────────────────── //
