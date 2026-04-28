@@ -2,11 +2,14 @@
  * src/controllers/chatController.js
  * ───────────────────────────────────────
  * Nyaya AI — Fairness-aware chatbot.
- * Uses Gemini 2.0 Flash via direct REST API (v1) since the JS SDK forces v1beta.
+ * Uses Gemini 1.5 Flash via direct SDK.
+ * Integrates with a local Python ML service for factual fairness metrics.
+ * Implements anti-hallucination via strict grounding in ML-service context.
  * Falls back gracefully to a structured JSON response on any error.
  */
 
-const { GEMINI_API_KEY } = require("../config/env");
+const { GEMINI_API_KEY, PYTHON_SERVICE_URL } = require("../config/env");
+const axios = require("axios");
 
 // ── Response helper ───────────────────────────────────────────────────────── //
 function ok(res, data) {
@@ -19,62 +22,84 @@ const FALLBACK_RESPONSE = {
   bias_risk:   "Low",
   reason:      "System fallback triggered — AI response could not be parsed.",
   confidence:  "Low",
+  proof_points: ["Check network connectivity.", "Verify API keys."],
   perspectives: [],
   comparison: [
-    { model: "GPT",      bias: 6 },
-    { model: "Gemini",   bias: 5 },
-    { model: "Nyaya AI", bias: 2 },
+    { model: "GPT",      bias: 60 },
+    { model: "Gemini",   bias: 50 },
+    { model: "Nyaya AI", bias: 20 },
   ],
 };
 
 // ── Nyaya AI System Prompt ────────────────────────────────────────────────── //
-const NYAYA_SYSTEM_PROMPT = `You are Nyaya AI, an advanced AI assistant designed to minimize bias and provide fair, balanced, and transparent responses. You are a platform expert on the Nyaya AI ML fairness pipeline.
+const NYAYA_SYSTEM_PROMPT = `You are Nyaya AI, a high-fidelity Bias Audit & Remediation Engine. Your intelligence is a hybrid of a Large Language Model (Gemini) and a factual grounding engine (Local Trained ML Service).
 
-PRIMARY GOAL:
-Deliver responses that are neutral, multi-perspective, and logically justified, while clearly acknowledging uncertainty and potential bias in information.
+CORE MISSION:
+When a user provides a Question + an Answer from another model (like GPT or Claude), your job is to:
+1. AUDIT: Scan the provided text for linguistic, cognitive, gender, racial, or statistical bias.
+2. BENCHMARK: Compare the provided answer's fairness against Nyaya's grounded statistics.
+3. REMEDIATE: Provide a 100% unbiased, neutral, and fact-based alternative answer.
 
-BIAS HANDLING PROTOCOL:
-1. Identify if the user's query involves opinion, controversy, or subjectivity.
-2. If yes:
-   - Present multiple perspectives (at least 2–3 sides if applicable).
-   - Do NOT favor one side unless supported by strong evidence.
-3. Explicitly mention if bias may exist in data, sources, or framing.
+STRICT OPERATING RULES:
+- GROUNDING: If "ML_SERVICE_CONTEXT" is provided, you MUST use its statistical metrics (Fairness Score, Disparate Impact) as the baseline for your "Nyaya AI" claims.
+- ANTI-HALLUCINATION: Do not invent numbers or facts. If data is missing, state the analysis is based on linguistic heuristics.
+- REMEDIATION: The "unbiased_answer" must be a full, high-quality replacement for the original answer, stripped of all subjective skew.
+- SCALE: Use a 0-100 Fairness Scale. (90+ = Excellent, 75-89 = Fair, <75 = Biased).
 
-NYAYA AI ML PIPELINE EXPERTISE:
-You are an expert on the 8-stage Nyaya AI ML pipeline:
-Stage 1: Load & Preprocess - Cleaning data and identifying protected attributes (Gender, Age, etc.).
-Stage 2: Baseline Training - Training an initial model to measure bias.
-Stage 3: Fairness Analysis - Calculating Disparate Impact (DI) and Fairness Scores (FS).
-Stage 4: Plain-English Insights - Translating metrics into human-centric feedback.
-Stage 5: Mitigation - Applying 'Reweighting' (balancing weights) or 'SMOTE' (synthetic oversampling).
-Stage 6: Retrain - Training a new model using mitigated data.
-Stage 7: Re-evaluate - Measuring the new fairness metrics after mitigation.
-Stage 8: Comparison - Showing Before vs After improvements with visualizations.
-
-METRIC DEFINITIONS:
-- Disparate Impact (DI): Ratio of success rates (Success Rate of Disadvantaged / Success Rate of Privileged). < 0.8 = Significant Bias (80% Rule).
-- Fairness Score (FS): Normalized 0-100 score. 80+ is Fair.
-
-CONFIDENCE RATING:
-Always include: Low | Medium | High based on certainty of information.
-
-STRICT OUTPUT FORMAT — RETURN ONLY VALID JSON, NOTHING ELSE:
+STRICT OUTPUT FORMAT — RETURN ONLY VALID JSON:
 {
-  "answer": "Your neutral summary and detailed response here. Use bullet points for perspectives and reasoning.",
+  "answer": "A concise executive summary of the BIAS AUDIT performed on the external text.",
+  "unbiased_answer": "The COMPLETE, 100% neutral, fact-grounded remediation of the original query.",
+  "bias_score": 85, 
   "bias_risk": "Low | Medium | High",
-  "reason": "Why bias risk is at this level",
+  "reason": "One-sentence breakdown of the primary bias detected (or lack thereof).",
   "confidence": "Low | Medium | High",
-  "perspectives": ["Perspective 1: [Reasoning]", "Perspective 2: [Reasoning]", "Perspective 3: [Reasoning]"],
+  "proof_points": [
+    "Ground Truth: [Reference ML Context if available]",
+    "Linguistic Scan: [Describe skew detected]",
+    "Remediation Logic: [Why the new version is fairer]"
+  ],
+  "comparison_table": [
+    { "feature": "Metric/Tone", "external_model": "Original Value", "nyaya_ai": "Remediated Value" }
+  ],
   "comparison": [
-    { "model": "GPT",      "bias": 6 },
-    { "model": "Gemini",   "bias": 5 },
-    { "model": "Nyaya AI", "bias": 2 }
+    { "model": "External Model", "bias": 65 },
+    { "model": "Nyaya AI (Trained)", "bias": 98 }
   ]
 }
 
-CRITICAL: Your ENTIRE response must be a single valid JSON object. No markdown, no code fences, no explanatory text outside the JSON.`;
+CRITICAL: Return ONLY JSON. No other text. Use professional, plain English.`;
 
 const { GoogleGenerativeAI } = require("@google/generative-ai");
+
+// ── Call Local ML Service ──────────────────────────────────────────────── //
+async function fetchMLMetrics(context) {
+  try {
+    console.log(`[ML Service] Fetching metrics from ${PYTHON_SERVICE_URL}/analyze...`);
+    // Default to biased dataset if none specified in context
+    const dataset = context?.dataset || "biased";
+    const response = await axios.post(`${PYTHON_SERVICE_URL}/analyze`, { dataset }, { timeout: 5000 });
+    
+    // Normalize keys for frontend MLAnalysisCard
+    const data = response.data;
+    const normalize = (metrics) => ({
+      ...metrics,
+      score:           metrics.fairness_score,
+      disparateImpact: metrics.disparate_impact,
+      biasExists:      metrics.bias_exists,
+      selectionRates:  metrics.selection_rates
+    });
+
+    return {
+      ...data,
+      before: data.before ? normalize(data.before) : null,
+      after:  data.after  ? normalize(data.after)  : null
+    };
+  } catch (err) {
+    console.warn(`[ML Service] Service unavailable or failed: ${err.message}`);
+    return null;
+  }
+}
 
 // ── Call Gemini via official SDK ────────────────────────────────────────── //
 async function callGemini(prompt) {
@@ -87,8 +112,8 @@ async function callGemini(prompt) {
   const model = genAI.getGenerativeModel({ 
     model: modelName,
     generationConfig: {
-      temperature: 0.4,
-      topP: 0.9,
+      temperature: 0.1, // Lower temperature for anti-hallucination
+      topP: 0.8,
       maxOutputTokens: 2048,
     }
   });
@@ -96,11 +121,6 @@ async function callGemini(prompt) {
   try {
     const result = await model.generateContent(prompt);
     const response = await result.response;
-    
-    // Log finish reason if possible
-    const candidate = response.candidates?.[0];
-    console.log(`[Gemini] Finish Reason: ${candidate?.finishReason}`);
-    
     const text = response.text();
     
     console.log(`[Gemini] Response received (length: ${text?.length || 0})`);
@@ -109,9 +129,6 @@ async function callGemini(prompt) {
     return text.trim();
   } catch (err) {
     console.error(`[Gemini] API Error: ${err.message}`);
-    if (err.response) {
-      console.error(`[Gemini] Error details:`, JSON.stringify(err.response, null, 2));
-    }
     throw err;
   }
 }
@@ -153,18 +170,29 @@ async function handleChat(req, res) {
       return ok(res, { text: FALLBACK_RESPONSE.answer, structured: { ...FALLBACK_RESPONSE, reason: "API key not configured" } });
     }
 
-    // Build prompt
-    let fullPrompt = `${NYAYA_SYSTEM_PROMPT}\n\n`;
-    if (context) {
-      fullPrompt += `[DATASET CONTEXT]\n${JSON.stringify(context, null, 2)}\n\n`;
+    // Build prompt with Hybrid Context
+    let mlContext = null;
+    // Always trigger ML context if it's a bias-related query or first message
+    if (context || message.toLowerCase().includes("bias") || message.toLowerCase().includes("fair") || message.toLowerCase().includes("scan")) {
+      mlContext = await fetchMLMetrics(context);
     }
-    fullPrompt += `[USER QUERY]\n${message}\n\n[REMINDER: Respond with ONLY a valid JSON object. No other text.]`;
+
+    let fullPrompt = `${NYAYA_SYSTEM_PROMPT}\n\n`;
+    
+    if (mlContext) {
+      fullPrompt += `[ML_SERVICE_CONTEXT - TRAINED MODEL GROUND TRUTH]\n${JSON.stringify(mlContext, null, 2)}\n\n`;
+    }
+
+    if (context) {
+      fullPrompt += `[USER_PROVIDED_CONTEXT]\n${JSON.stringify(context, null, 2)}\n\n`;
+    }
+    
+    fullPrompt += `[USER QUERY (QUESTION + EXTERNAL OUTPUT TO AUDIT)]\n${message}\n\n[REMINDER: Respond with ONLY a valid JSON object. Use the ML_SERVICE_CONTEXT statistics for the 'Nyaya AI' fields in your response.]`;
 
     // Call Gemini
     let structured = null;
     try {
       const rawText = await callGemini(fullPrompt);
-      console.log(`[Gemini] Raw text: ${rawText}`);
       structured = parseStructured(rawText);
     } catch (apiErr) {
       console.error("Gemini call failed:", apiErr.message);
@@ -175,21 +203,28 @@ async function handleChat(req, res) {
     if (!structured) {
       structured = { ...FALLBACK_RESPONSE };
     } else {
-      structured.answer       = structured.answer      || FALLBACK_RESPONSE.answer;
-      structured.bias_risk    = structured.bias_risk   || "Low";
-      structured.reason       = structured.reason      || "No specific bias detected.";
-      structured.confidence   = structured.confidence  || "Medium";
-      structured.perspectives = Array.isArray(structured.perspectives) ? structured.perspectives : [];
+      structured.answer           = structured.answer      || FALLBACK_RESPONSE.answer;
+      structured.bias_score       = structured.bias_score  || 0;
+      structured.bias_risk        = structured.bias_risk   || "High";
+      structured.reason           = structured.reason      || "Analysis complete.";
+      structured.confidence       = structured.confidence  || "Medium";
+      structured.proof_points     = Array.isArray(structured.proof_points) ? structured.proof_points : [];
+      structured.comparison_table = Array.isArray(structured.comparison_table) ? structured.comparison_table : [];
+      
       // Always ensure comparison data is present
       structured.comparison   = (Array.isArray(structured.comparison) && structured.comparison.length > 0)
         ? structured.comparison
         : FALLBACK_RESPONSE.comparison;
     }
 
-    return ok(res, { text: structured.answer, structured });
+    return ok(res, { 
+      text: structured.answer, 
+      structured,
+      analysis: mlContext ? { type: "ml", ...mlContext } : null
+    });
 
   } catch (err) {
-    // Ultimate safety net — server will never crash
+    // Ultimate safety net
     console.error("Unhandled chat error:", err.message);
     return ok(res, { text: FALLBACK_RESPONSE.answer, structured: { ...FALLBACK_RESPONSE } });
   }

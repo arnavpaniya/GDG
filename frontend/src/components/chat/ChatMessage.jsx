@@ -8,6 +8,7 @@ import {
   ShieldCheck, User, AlertTriangle, CheckCircle, Info,
   Download, FileText, FileCode, Table as TableIcon, Layers, BarChart2,
 } from "lucide-react";
+import BiasGauge           from "@/components/chat/BiasGauge";
 import FairnessScore3D    from "@/components/analysis/FairnessScore3D";
 import BiasExplanationCard from "@/components/analysis/BiasExplanationCard";
 import MLAnalysisCard      from "@/components/analysis/MLAnalysisCard";
@@ -25,7 +26,7 @@ const confidenceColor = (level) =>
                        { text: "#60a5fa", bg: "rgba(96,165,250,0.1)",  border: "rgba(96,165,250,0.3)"  };
 
 const barColor = (bias) =>
-  bias <= 3 ? "#22c55e" : bias <= 6 ? "#facc15" : "#ef4444";
+  bias <= 30 ? "#22c55e" : bias <= 60 ? "#facc15" : "#ef4444";
 
 // ── Bias Risk Badge ───────────────────────────────────────────────────────── //
 const BiasRiskBadge = ({ level = "Low" }) => {
@@ -57,7 +58,7 @@ const ConfidenceBadge = ({ level = "Medium" }) => {
 };
 
 // ── Bias Progress Bar ─────────────────────────────────────────────────────── //
-const BiasBar = ({ value, max = 10, label }) => {
+const BiasBar = ({ value, max = 100, label }) => {
   const pct = Math.min(100, (value / max) * 100);
   const color = barColor(value);
   return (
@@ -85,7 +86,7 @@ const CustomTooltip = ({ active, payload, label }) => {
       background: "#1e293b", border: "1px solid rgba(255,255,255,0.12)",
       borderRadius: 8, padding: "8px 14px", fontSize: 12, color: "#e2e8f0",
     }}>
-      <strong>{label}</strong>: <span style={{ color: barColor(val) }}>{val}/10</span>
+      <strong>{label}</strong>: <span style={{ color: barColor(val) }}>{val}/100</span>
     </div>
   );
 };
@@ -95,113 +96,130 @@ const NyayaStructuredCard = ({ structured }) => {
   if (!structured) return null;
 
   const {
-    answer      = "",
-    bias_risk   = "Low",
-    reason      = "",
-    confidence  = "Medium",
-    perspectives = [],
-    comparison  = [],
+    answer           = "",
+    unbiased_answer  = "",
+    bias_score       = 0,
+    bias_risk        = "Low",
+    reason           = "",
+    confidence       = "Medium",
+    proof_points     = [],
+    comparison_table = [],
+    comparison       = [],
   } = structured;
 
-  // Default comparison data always shown
-  const chartData = comparison.length > 0
-    ? comparison.map((c) => ({ name: c.model, bias: c.bias }))
-    : [
-        { name: "GPT",      bias: 6 },
-        { name: "Gemini",   bias: 5 },
-        { name: "Nyaya AI", bias: 2 },
-      ];
+  const chartData = comparison.map((c) => ({ name: c.model, bias: c.bias }));
 
   return (
     <motion.div
-      initial={{ opacity: 0, y: 8 }}
+      initial={{ opacity: 0, y: 12 }}
       animate={{ opacity: 1, y: 0 }}
-      transition={{ duration: 0.35, delay: 0.08 }}
+      transition={{ duration: 0.4, ease: "easeOut" }}
+      className="p-6 mt-4 rounded-2xl flex flex-col gap-6 border border-white/10 shadow-2xl relative overflow-hidden"
       style={{
-        background: "linear-gradient(135deg, rgba(15,23,42,0.95) 0%, rgba(30,41,59,0.9) 100%)",
-        border: "1px solid rgba(255,255,255,0.1)",
-        borderRadius: 16,
-        padding: "20px 22px",
-        marginTop: 12,
-        display: "flex",
-        flexDirection: "column",
-        gap: 18,
+        background: "linear-gradient(165deg, rgba(15, 23, 42, 0.98) 0%, rgba(30, 41, 59, 0.95) 100%)",
       }}
     >
-      {/* ── Header badges ── */}
-      <div style={{ display: "flex", flexWrap: "wrap", gap: 8 }}>
-        <BiasRiskBadge  level={bias_risk}  />
-        <ConfidenceBadge level={confidence} />
-      </div>
+      {/* Background Glow */}
+      <div className="absolute -top-24 -right-24 w-48 h-48 bg-accent-gold/5 blur-[80px] rounded-full pointer-events-none" />
 
-      {/* ── Reason ── */}
-      {reason && (
-        <div style={{ fontSize: 13, color: "#94a3b8", lineHeight: 1.6 }}>
-          <span style={{ fontWeight: 700, color: "#e2e8f0" }}>⚖️ Bias Reason: </span>
-          {reason}
+      {/* ── Header: Summary & Badges ── */}
+      <div className="flex flex-col md:flex-row items-center gap-8 relative z-10">
+        <div className="shrink-0">
+          <BiasGauge score={bias_score} label="Fairness" size={140} />
         </div>
-      )}
-
-      {/* ── Perspectives ── */}
-      {perspectives.length > 0 && (
-        <div>
-          <p style={{ fontSize: 11, fontWeight: 700, color: "#64748b", letterSpacing: "0.08em", textTransform: "uppercase", marginBottom: 10 }}>
-            🔍 Perspectives
+        
+        <div className="flex-1 flex flex-col gap-3">
+          <div className="flex flex-wrap gap-2">
+            <BiasRiskBadge level={bias_risk} />
+            <ConfidenceBadge level={confidence} />
+          </div>
+          <h3 className="text-lg font-bold text-white tracking-tight">Bias Audit Report</h3>
+          <p className="text-[14px] text-slate-300 leading-relaxed font-medium italic">
+            "{reason}"
           </p>
-          <ul style={{ display: "flex", flexDirection: "column", gap: 8, paddingLeft: 0, listStyle: "none", margin: 0 }}>
-            {perspectives.map((p, i) => (
-              <li key={i} style={{ display: "flex", gap: 10, fontSize: 13, color: "#94a3b8", lineHeight: 1.5 }}>
-                <span style={{ color: "#f59e0b", fontWeight: 700, flexShrink: 0 }}>{i + 1}.</span>
-                <span>{p}</span>
-              </li>
-            ))}
-          </ul>
+          <p className="text-[13px] text-slate-400 leading-relaxed">
+            {answer}
+          </p>
+        </div>
+      </div>
+
+      {/* ── Remediated Answer (centerpiece) ── */}
+      {unbiased_answer && (
+        <div className="relative z-10 p-5 rounded-xl border border-accent-gold/20 bg-accent-gold/[0.03] overflow-hidden">
+          <div className="absolute top-0 left-0 w-1 h-full bg-accent-gold" />
+          <h4 className="text-[10px] font-black text-accent-gold uppercase tracking-[0.2em] mb-2 flex items-center gap-2">
+            ✨ Remediated Unbiased Answer
+          </h4>
+          <p className="text-[15px] text-white leading-relaxed font-medium">
+            {unbiased_answer}
+          </p>
         </div>
       )}
 
-      {/* ── Progress Bars ── */}
-      <div>
-        <p style={{ fontSize: 11, fontWeight: 700, color: "#64748b", letterSpacing: "0.08em", textTransform: "uppercase", marginBottom: 10, display: "flex", alignItems: "center", gap: 6 }}>
-          <BarChart2 size={12} /> Model Bias Comparison (lower = fairer)
-        </p>
-        <div style={{ display: "flex", flexDirection: "column", gap: 8 }}>
-          {chartData.map((item) => (
-            <BiasBar key={item.name} label={item.name} value={item.bias} />
-          ))}
-        </div>
+      {/* ── Proof & Evidence Grid ── */}
+      <div className="grid grid-cols-1 md:grid-cols-2 gap-4 relative z-10">
+        {/* Proof Points */}
+        {proof_points.length > 0 && (
+          <div className="bg-white/[0.03] p-5 rounded-xl border border-white/5 flex flex-col gap-4">
+            <h4 className="text-[10px] font-black text-slate-500 uppercase tracking-[0.2em] flex items-center gap-2">
+              <CheckCircle size={14} className="text-accent-gold" /> Critical Proof
+            </h4>
+            <div className="flex flex-col gap-3">
+              {proof_points.map((point, i) => (
+                <div key={i} className="flex gap-3 text-[13px] text-slate-300 items-start">
+                  <div className="w-5 h-5 rounded-md bg-accent-gold/10 flex items-center justify-center shrink-0 text-[10px] font-bold text-accent-gold border border-accent-gold/20">
+                    {i + 1}
+                  </div>
+                  <span className="leading-tight">{point}</span>
+                </div>
+              ))}
+            </div>
+          </div>
+        )}
+
+        {/* Benchmarking (Visual) */}
+        {chartData.length > 0 && (
+          <div className="bg-white/[0.03] p-5 rounded-xl border border-white/5 flex flex-col gap-4">
+            <h4 className="text-[10px] font-black text-slate-500 uppercase tracking-[0.2em] flex items-center gap-2">
+              <BarChart2 size={14} className="text-blue-400" /> Benchmarking
+            </h4>
+            <div className="flex flex-col gap-4">
+              {chartData.map((item) => (
+                <BiasBar key={item.name} label={item.name} value={item.bias} />
+              ))}
+            </div>
+          </div>
+        )}
       </div>
 
-      {/* ── Recharts Bar Chart ── */}
-      <div>
-        <p style={{ fontSize: 11, fontWeight: 700, color: "#64748b", letterSpacing: "0.08em", textTransform: "uppercase", marginBottom: 12 }}>
-          📊 Bias Score Chart
-        </p>
-        <div style={{ width: "100%", height: 180 }}>
-          <ResponsiveContainer width="100%" height="100%">
-            <BarChart data={chartData} margin={{ top: 4, right: 8, left: -18, bottom: 0 }} barSize={36}>
-              <CartesianGrid strokeDasharray="3 3" stroke="rgba(255,255,255,0.06)" vertical={false} />
-              <XAxis
-                dataKey="name"
-                tick={{ fill: "#94a3b8", fontSize: 12, fontWeight: 600 }}
-                axisLine={{ stroke: "rgba(255,255,255,0.08)" }}
-                tickLine={false}
-              />
-              <YAxis
-                domain={[0, 10]}
-                tick={{ fill: "#64748b", fontSize: 11 }}
-                axisLine={false}
-                tickLine={false}
-              />
-              <Tooltip content={<CustomTooltip />} cursor={{ fill: "rgba(255,255,255,0.03)" }} />
-              <Bar dataKey="bias" radius={[6, 6, 0, 0]}>
-                {chartData.map((entry) => (
-                  <Cell key={entry.name} fill={barColor(entry.bias)} />
+      {/* ── Detailed Comparison Table ── */}
+      {comparison_table.length > 0 && (
+        <div className="mt-2 relative z-10">
+          <h4 className="text-[10px] font-black text-slate-500 uppercase tracking-[0.2em] mb-3 flex items-center gap-2">
+            <TableIcon size={14} className="text-purple-400" /> Cross-Model Differential
+          </h4>
+          <div className="overflow-hidden rounded-xl border border-white/5 bg-black/20">
+            <table className="w-full text-left text-[12px]">
+              <thead>
+                <tr className="bg-white/[0.05] text-slate-400 border-b border-white/5">
+                  <th className="px-4 py-3 font-bold uppercase tracking-tight">Feature Analyzed</th>
+                  <th className="px-4 py-3 font-bold uppercase tracking-tight">Original Text</th>
+                  <th className="px-4 py-3 font-bold uppercase tracking-tight text-accent-gold">Nyaya Remediation</th>
+                </tr>
+              </thead>
+              <tbody className="divide-y divide-white/5">
+                {comparison_table.map((row, i) => (
+                  <tr key={i} className="hover:bg-white/[0.02] transition-colors group">
+                    <td className="px-4 py-3 font-medium text-slate-300 group-hover:text-white">{row.feature}</td>
+                    <td className="px-4 py-3 text-slate-400">{row.external_model}</td>
+                    <td className="px-4 py-3 text-white font-semibold">{row.nyaya_ai}</td>
+                  </tr>
                 ))}
-              </Bar>
-            </BarChart>
-          </ResponsiveContainer>
+              </tbody>
+            </table>
+          </div>
         </div>
-      </div>
+      )}
     </motion.div>
   );
 };
