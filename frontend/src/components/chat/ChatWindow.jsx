@@ -41,72 +41,70 @@ const ChatWindow = ({ messages: messagesProp, onSendMessage, onFileUpload, isLoa
 
   return (
     <div className="flex-1 flex flex-col relative overflow-hidden bg-bg-primary h-full">
-      {/* Header with Actions */}
-      <div className="px-6 py-3 border-b border-border flex items-center justify-between bg-bg-surface/50 backdrop-blur-md z-20">
-        <div className="flex items-center gap-3">
-          <div className="w-2 h-2 rounded-full bg-accent-gold animate-pulse"></div>
-          <h2 className="text-sm font-medium text-text-primary">Nyaya AI Session</h2>
+      {/* Minimal header */}
+      <div className="px-5 py-3 border-b border-border flex items-center justify-between bg-bg-primary/80 backdrop-blur-md z-20">
+        <div className="flex items-center gap-2">
+          <img src="/assets/logo-mark.png" alt="" className="h-5 w-auto opacity-70" />
+          <span className="text-sm font-medium text-text-secondary">Nyaya AI</span>
         </div>
-        
+
         <div className="relative">
-          <button 
+          <button
             onClick={() => setIsExportMenuOpen(!isExportMenuOpen)}
-            className="flex items-center gap-2 px-3 py-1.5 rounded-lg text-xs font-bold text-text-secondary hover:text-text-primary hover:bg-black/5 transition-all uppercase tracking-widest border border-border/50"
+            className="p-1.5 rounded-lg text-text-tertiary hover:text-text-primary hover:bg-black/5 transition-fast"
+            title="Export"
           >
-            <Download size={14} /> Export
+            <MoreVertical size={16} />
           </button>
-          
+
           {isExportMenuOpen && (
-            <div className="absolute right-0 mt-2 w-48 bg-bg-surface border border-border rounded-xl shadow-lg z-30 overflow-hidden animate-in fade-in slide-in-from-top-2 duration-200">
-              <button 
-                onClick={handleExportPDF}
-                className="w-full flex items-center gap-3 px-4 py-3 text-sm text-text-secondary hover:bg-black/5 hover:text-text-primary transition-fast"
-              >
-                <FileText size={16} className="text-red-500" />
-                Export as PDF
+            <div className="absolute right-0 mt-2 w-44 bg-bg-surface border border-border rounded-xl shadow-lg z-30 overflow-hidden">
+              <button onClick={handleExportPDF}
+                className="w-full flex items-center gap-3 px-4 py-3 text-sm text-text-secondary hover:bg-black/5 hover:text-text-primary transition-fast">
+                <FileText size={15} className="text-red-400" /> Export PDF
               </button>
-              <button 
-                onClick={handleExportJSON}
-                className="w-full flex items-center gap-3 px-4 py-3 text-sm text-text-secondary hover:bg-black/5 hover:text-text-primary transition-fast"
-              >
-                <FileCode size={16} className="text-blue-500" />
-                Export as JSON
+              <button onClick={handleExportJSON}
+                className="w-full flex items-center gap-3 px-4 py-3 text-sm text-text-secondary hover:bg-black/5 hover:text-text-primary transition-fast">
+                <FileCode size={15} className="text-blue-400" /> Export JSON
               </button>
             </div>
           )}
         </div>
       </div>
 
-      <div 
+      {/* Messages */}
+      <div
         ref={scrollRef}
-        className="flex-1 overflow-y-auto min-h-0 px-4 pt-8 pb-4 scroll-smooth"
+        className="flex-1 overflow-y-auto min-h-0 px-4 pt-8 pb-2 scroll-smooth"
       >
-        <div className="max-w-[800px] mx-auto w-full">
+        <div className="max-w-[720px] mx-auto w-full">
           {messages.length === 0 ? (
-            <div className="h-full flex items-center justify-center text-text-tertiary text-sm">
-              <p>No messages yet. Start a new conversation.</p>
+            <div className="flex items-center justify-center text-text-tertiary text-sm mt-20">
+              No messages yet.
             </div>
           ) : (
             messages.map((msg, index) => (
               <ChatMessage key={msg.id || index} message={msg} />
             ))
           )}
-          
+
           {isLoading && (
-            <div className="flex items-center gap-2 text-text-secondary text-sm mb-4 animate-pulse bg-bg-surface p-4 rounded-lg border border-border shadow-soft w-fit">
-              <div className="w-2 h-2 bg-accent-gold rounded-full"></div>
-              Analyzing dataset for potential bias...
+            <div className="flex items-center gap-3 py-4 px-1">
+              <div className="flex gap-1">
+                <span className="w-2 h-2 bg-accent-gold rounded-full animate-bounce" style={{ animationDelay: '0ms' }} />
+                <span className="w-2 h-2 bg-accent-gold rounded-full animate-bounce" style={{ animationDelay: '150ms' }} />
+                <span className="w-2 h-2 bg-accent-gold rounded-full animate-bounce" style={{ animationDelay: '300ms' }} />
+              </div>
+              <span className="text-xs text-text-tertiary">Analyzing...</span>
             </div>
           )}
 
-          <div ref={bottomRef} className="h-20" />
-
-          {/* AuthGate removed so guest mode works freely */}
+          <div ref={bottomRef} className="h-4" />
         </div>
       </div>
 
-      <ChatInput 
-        onSendMessage={onSendMessage} 
+      <ChatInput
+        onSendMessage={onSendMessage}
         onFileUpload={onFileUpload}
         isLoading={isLoading}
       />

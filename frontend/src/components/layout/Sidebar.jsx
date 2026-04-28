@@ -84,10 +84,10 @@ const Sidebar = () => {
       {/* Header */}
       <div className="p-4 flex flex-col gap-3">
         <div className="flex items-center justify-between px-1">
-          <div className="flex items-center gap-2">
+          <Link href="/" className="flex items-center gap-2 hover:opacity-80 transition-fast">
             <img src="/assets/logo-mark.png" alt="Nyaya AI" className="h-7 w-auto object-contain" />
             <h1 className="text-lg font-semibold text-text-primary">Nyaya AI</h1>
-          </div>
+          </Link>
           <button 
             onClick={() => setSidebarOpen(false)}
             className="text-text-tertiary hover:text-text-primary transition-fast p-1.5 hover:bg-black/5 rounded-md"

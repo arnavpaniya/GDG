@@ -1,7 +1,7 @@
 "use client";
 
-import React, { useState, useEffect } from 'react';
-import { Upload, ArrowRight, ArrowLeft } from 'lucide-react';
+import React, { useState, useEffect, useRef } from 'react';
+import { Upload, ArrowUp, Paperclip, BarChart2, ShieldCheck, Lightbulb, Scale } from 'lucide-react';
 import useStore from '@/store/useStore';
 import ChatWindow from '@/components/chat/ChatWindow';
 import { subscribeToMessages, addMessage, createNewChat } from '@/utils/chatService';
@@ -13,6 +13,8 @@ export default function AppHome() {
   const router = useRouter();
   const { user, currentChatId, setCurrentChatId, messages, setMessages } = useStore();
   const [isLoading, setIsLoading] = useState(false);
+  const [inputText, setInputText] = useState('');
+  const textareaRef = useRef(null);
 
   useEffect(() => {
     if (user && currentChatId) {
@@ -171,14 +173,6 @@ export default function AppHome() {
   if (currentChatId) {
     return (
       <div className="flex-1 flex flex-col relative h-full">
-        {/* Back to Home Button */}
-        <button
-          onClick={() => router.push('/')}
-          className="absolute top-4 left-4 z-50 flex items-center gap-2 px-3 py-2 bg-bg-surface border border-border rounded-lg text-text-secondary hover:text-accent-gold hover:border-accent-gold/30 transition-all shadow-soft text-sm font-medium"
-        >
-          <ArrowLeft size={16} />
-          Back to Home
-        </button>
         <ChatWindow
           messages={messages}
           onSendMessage={handleSendMessage}
@@ -191,105 +185,96 @@ export default function AppHome() {
 
   return (
     <div className="flex-1 flex flex-col items-center justify-center px-4 overflow-y-auto bg-bg-primary relative">
-      {/* Back to Home Button */}
-      <button
-        onClick={() => router.push('/')}
-        className="absolute top-4 left-4 z-50 flex items-center gap-2 px-3 py-2 bg-bg-surface border border-border rounded-lg text-text-secondary hover:text-accent-gold hover:border-accent-gold/30 transition-all shadow-soft text-sm font-medium"
-      >
-        <ArrowLeft size={16} />
-        Back to Home
-      </button>
-      
-      <div className="max-w-[700px] w-full text-center">
-        {/* Welcome Message */}
-        <div className="mb-8">
-          <h1 className="text-3xl md:text-4xl font-serif font-medium text-text-primary mb-3">
-            What can I help you analyze?
+      {/* Greeting */}
+      <div className="w-full max-w-[680px] flex flex-col items-center text-center mb-8">
+        <div className="flex items-center justify-center gap-3 mb-3">
+          <img src="/assets/logo-mark.png" alt="Nyaya AI" className="h-9 w-auto" />
+          <h1 className="text-4xl md:text-5xl font-semibold text-text-primary tracking-tight">
+            {user?.name ? `Hello, ${user.name.split(' ')[0]}` : 'Hello there'}
           </h1>
-          <p className="text-base text-text-secondary max-w-[500px] mx-auto">
-            Upload a dataset or ask me about AI fairness, bias detection, and ethical ML practices.
-          </p>
+        </div>
+        <p className="text-lg text-text-tertiary font-normal">
+          How can I help you today?
+        </p>
+      </div>
+
+      {/* Input Box */}
+      <div className="w-full max-w-[680px]">
+        <div className="bg-bg-surface border border-border rounded-2xl shadow-soft overflow-hidden focus-within:border-accent-gold/40 transition-colors">
+          <textarea
+            ref={textareaRef}
+            value={inputText}
+            onChange={(e) => {
+              setInputText(e.target.value);
+              e.target.style.height = 'auto';
+              e.target.style.height = Math.min(e.target.scrollHeight, 180) + 'px';
+            }}
+            placeholder="Ask about AI fairness, bias detection, or upload a dataset..."
+            rows={1}
+            className="w-full bg-transparent border-none focus:ring-0 text-text-primary resize-none text-[15px] placeholder:text-text-tertiary outline-none px-5 pt-4 pb-2 leading-relaxed"
+            onKeyDown={(e) => {
+              if (e.key === 'Enter' && !e.shiftKey) {
+                e.preventDefault();
+                if (inputText.trim()) {
+                  handleSendMessage(inputText);
+                  setInputText('');
+                  if (textareaRef.current) textareaRef.current.style.height = 'auto';
+                }
+              }
+            }}
+          />
+          <div className="flex items-center justify-between px-3 pb-3 pt-1">
+            <div className="flex items-center gap-1">
+              <input type="file" accept=".csv" className="hidden" id="home-file-upload"
+                onChange={(e) => { if (e.target.files[0]) handleFileUpload(e.target.files[0]); }} />
+              <label htmlFor="home-file-upload"
+                className="flex items-center gap-1.5 px-2.5 py-1.5 rounded-lg text-xs font-medium text-text-tertiary hover:text-text-primary hover:bg-black/5 transition-fast cursor-pointer">
+                <Paperclip size={15} />
+                <span>Upload CSV</span>
+              </label>
+            </div>
+            <button
+              onClick={() => {
+                if (inputText.trim()) {
+                  handleSendMessage(inputText);
+                  setInputText('');
+                  if (textareaRef.current) textareaRef.current.style.height = 'auto';
+                }
+              }}
+              disabled={!inputText.trim()}
+              className={`p-2 rounded-xl transition-all ${
+                inputText.trim()
+                  ? 'bg-accent-gold text-white shadow-sm hover:opacity-90'
+                  : 'bg-bg-secondary text-text-tertiary cursor-not-allowed'
+              }`}
+            >
+              <ArrowUp size={17} strokeWidth={2.5} />
+            </button>
+          </div>
         </div>
 
-        {/* Quick Actions */}
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-3 mb-6">
+        {/* Suggestion Chips */}
+        <div className="flex flex-wrap justify-center gap-2 mt-5">
           {[
-            { icon: "📊", title: "Upload Dataset", desc: "Analyze CSV for bias" },
-            { icon: "⚖️", title: "Check Fairness", desc: "Evaluate model fairness" },
-            { icon: "🔍", title: "Detect Bias", desc: "Identify discrimination" },
-            { icon: "💡", title: "Get Recommendations", desc: "Improve your models" }
-          ].map((action, idx) => (
+            { icon: <BarChart2 size={14} />, label: 'Analyze a dataset' },
+            { icon: <ShieldCheck size={14} />, label: 'Detect gender bias' },
+            { icon: <Scale size={14} />, label: 'Explain disparate impact' },
+            { icon: <Lightbulb size={14} />, label: 'Suggest bias fixes' },
+          ].map(({ icon, label }) => (
             <button
-              key={idx}
-              onClick={() => handleSendMessage(action.title)}
-              className="flex items-start gap-3 p-4 text-left bg-bg-surface border border-border rounded-xl hover:bg-black/5 transition-all group"
+              key={label}
+              onClick={() => handleSendMessage(label)}
+              className="flex items-center gap-2 px-4 py-2 rounded-full border border-border bg-bg-surface text-sm text-text-secondary hover:text-text-primary hover:border-accent-gold/40 hover:bg-bg-secondary transition-all"
             >
-              <span className="text-2xl">{action.icon}</span>
-              <div>
-                <p className="text-sm font-medium text-text-primary group-hover:text-accent-gold transition-fast">
-                  {action.title}
-                </p>
-                <p className="text-xs text-text-secondary mt-0.5">{action.desc}</p>
-              </div>
+              <span className="text-text-tertiary">{icon}</span>
+              {label}
             </button>
           ))}
         </div>
 
-        {/* Input Area */}
-        <div className="relative w-full max-w-[700px] mx-auto">
-          <div className="bg-bg-surface border border-border rounded-xl shadow-soft">
-            <textarea
-              placeholder="Ask about AI fairness, bias detection, or upload a dataset..."
-              data-testid="app-prompt-input"
-              className="w-full bg-transparent border-none focus:ring-0 text-text-primary resize-none h-24 text-[15px] placeholder:text-text-tertiary outline-none p-4"
-              onKeyDown={(e) => {
-                if (e.key === 'Enter' && !e.shiftKey) {
-                  e.preventDefault();
-                  const val = e.target.value.trim();
-                  if (val) {
-                    handleSendMessage(val);
-                    e.target.value = '';
-                  }
-                }
-              }}
-            />
-            <div className="flex items-center justify-between px-3 py-2 border-t border-border">
-              <div className="flex items-center gap-1">
-                <input
-                  type="file" accept=".csv" className="hidden" id="hero-file-upload"
-                  onChange={(e) => handleFileUpload(e.target.files[0])}
-                />
-                <label
-                  htmlFor="hero-file-upload"
-                  data-testid="app-upload-csv"
-                  className="flex items-center gap-1.5 px-3 py-2 rounded-lg text-xs font-medium text-text-secondary hover:text-text-primary hover:bg-black/5 transition-fast cursor-pointer"
-                >
-                  <Upload size={14} /> Upload CSV
-                </label>
-              </div>
-              <button
-                onClick={() => {
-                  const textarea = document.querySelector('[data-testid="app-prompt-input"]');
-                  const val = textarea?.value?.trim();
-                  if (val) {
-                    handleSendMessage(val);
-                    if (textarea) textarea.value = '';
-                  }
-                }}
-                data-testid="app-send-btn"
-                className="bg-accent-gold text-white p-2 rounded-lg hover:opacity-90 transition-all shadow-soft"
-              >
-                <ArrowRight size={18} strokeWidth={2.5} />
-              </button>
-            </div>
-          </div>
-        </div>
-
-        {/* Trust Badge */}
-        <div className="mt-6 flex items-center justify-center gap-2 text-xs text-text-tertiary">
-          <span className="inline-block w-2 h-2 bg-accent-teal rounded-full"></span>
-          <span>Powered by ethical AI analysis</span>
-        </div>
+        <p className="text-center text-[11px] text-text-tertiary mt-5">
+          Nyaya AI can make mistakes. Verify important information.
+        </p>
       </div>
     </div>
   );

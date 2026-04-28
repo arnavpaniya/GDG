@@ -214,100 +214,77 @@ const ChatMessage = ({ message }) => {
 
   return (
     <motion.div
-      initial={{ opacity: 0, y: 10 }}
+      initial={{ opacity: 0, y: 8 }}
       animate={{ opacity: 1, y: 0 }}
-      transition={{ duration: 0.3 }}
+      transition={{ duration: 0.25 }}
       className={`flex w-full mb-6 ${!isAI ? "justify-end" : "justify-start"}`}
     >
-      <div className={`flex gap-3 max-w-[88%] ${!isAI ? "flex-row-reverse" : "flex-row"}`}>
-        {/* Avatar */}
-        <div
-          className={`w-8 h-8 rounded-full flex items-center justify-center shrink-0 ${
-            isAI ? "bg-yellow-400/10 text-yellow-400" : "bg-blue-400/10 text-blue-400"
-          }`}
-        >
-          {isAI ? <ShieldCheck size={16} /> : <User size={16} />}
-        </div>
+      {isAI ? (
+        /* ── AI message: avatar + text left-aligned ── */
+        <div className="flex gap-3 max-w-[85%]">
+          <div className="w-7 h-7 rounded-full bg-accent-gold/10 flex items-center justify-center shrink-0 mt-0.5">
+            <img src="/assets/logo-mark.png" alt="" className="h-4 w-4 object-contain opacity-80" />
+          </div>
+          <div className="flex flex-col gap-2 min-w-0 flex-1">
+            {message.content && (
+              <p className="text-[15px] leading-relaxed text-text-primary whitespace-pre-wrap">
+                {message.content}
+              </p>
+            )}
 
-        {/* Bubble + Card */}
-        <div className={`flex flex-col gap-2 ${!isAI ? "items-end" : "items-start"}`} style={{ minWidth: 0, flex: 1 }}>
-          {/* Answer bubble */}
-          {message.content && (
-            <div
-              className={`px-4 py-3 rounded-2xl text-[15px] leading-relaxed ${
-                isAI
-                  ? "bg-bg-surface text-text-primary border border-border rounded-tl-sm"
-                  : "bg-bg-secondary text-text-primary rounded-tr-sm"
-              }`}
-            >
-              {message.content}
-            </div>
-          )}
-
-          {/* Nyaya Structured Card */}
-          {isAI && message.structured && (
-            <div style={{ width: "100%" }}>
+            {/* Structured card */}
+            {message.structured && (
               <NyayaStructuredCard structured={message.structured} />
-            </div>
-          )}
+            )}
 
-          {/* Legacy Analysis Results (file upload) */}
-          {message.analysis && (
-            <div className="mt-4 flex flex-col gap-3 w-full min-w-[300px] md:min-w-[450px]">
-              {message.analysis.type === "ml" ? (
-                <MLAnalysisCard analysis={message.analysis} />
-              ) : (
-                <>
-                  {message.analysis.sensitiveAttrs && (
-                    <div className="flex flex-wrap items-center gap-2 px-4 py-2 bg-bg-secondary/50 rounded-full border border-border/50">
-                      <span className="text-[11px] font-medium text-text-tertiary flex items-center gap-1.5 mr-2">
-                        <Layers size={12} /> Analyzed:
-                      </span>
-                      {message.analysis.sensitiveAttrs.map((attr) => (
-                        <span key={attr} className="text-[11px] px-2.5 py-1 rounded-full bg-bg-surface text-text-secondary border border-border/50 shadow-sm">
-                          {attr}
+            {/* Analysis results */}
+            {message.analysis && (
+              <div className="flex flex-col gap-3 w-full mt-1">
+                {message.analysis.type === "ml" ? (
+                  <MLAnalysisCard analysis={message.analysis} />
+                ) : (
+                  <>
+                    {message.analysis.sensitiveAttrs && (
+                      <div className="flex flex-wrap items-center gap-2 px-4 py-2 bg-bg-secondary/50 rounded-full border border-border/50">
+                        <span className="text-[11px] font-medium text-text-tertiary flex items-center gap-1.5 mr-2">
+                          <Layers size={12} /> Analyzed:
                         </span>
+                        {message.analysis.sensitiveAttrs.map((attr) => (
+                          <span key={attr} className="text-[11px] px-2.5 py-1 rounded-full bg-bg-surface text-text-secondary border border-border/50">
+                            {attr}
+                          </span>
+                        ))}
+                      </div>
+                    )}
+                    <div className="flex justify-center bg-bg-surface p-6 rounded-xl border border-border shadow-soft">
+                      <FairnessScore3D score={message.analysis.score} />
+                    </div>
+                    <div className="flex flex-col gap-2">
+                      {message.analysis.findings?.map((finding, index) => (
+                        <BiasExplanationCard key={index} title={finding.title} description={finding.description} severity={finding.severity} detail={finding.detail} />
                       ))}
                     </div>
-                  )}
-
-                  <div className="flex justify-center bg-bg-surface p-6 rounded-xl border border-border shadow-soft">
-                    <FairnessScore3D score={message.analysis.score} />
-                  </div>
-
-                  <div className="flex flex-col gap-compact">
-                    {message.analysis.findings?.map((finding, index) => (
-                      <BiasExplanationCard
-                        key={index}
-                        title={finding.title}
-                        description={finding.description}
-                        severity={finding.severity}
-                        detail={finding.detail}
-                      />
-                    ))}
-                  </div>
-                </>
-              )}
-
-              {/* Export actions */}
-              <div className="flex items-center gap-3 mt-2 p-3 bg-bg-secondary/30 rounded-lg border border-border/50 border-dashed">
-                <span className="text-[11px] font-bold text-text-tertiary uppercase tracking-widest mr-auto flex items-center gap-1.5">
-                  <Download size={13} /> Export Report
-                </span>
-                <button onClick={() => exportToPDF(message.analysis)} className="flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-[11px] font-bold text-yellow-400 hover:text-yellow-300 transition-all uppercase tracking-widest" title="Download PDF">
-                  <FileText size={14} /> PDF
-                </button>
-                <button onClick={() => exportToCSV(message.analysis.findings || message.analysis)} className="flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-[11px] font-bold text-text-secondary hover:text-text-primary transition-all uppercase tracking-widest" title="Download CSV">
-                  <TableIcon size={14} /> CSV
-                </button>
-                <button onClick={() => exportToJSON(message.analysis)} className="flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-[11px] font-bold text-text-secondary hover:text-text-primary transition-all uppercase tracking-widest" title="Download JSON">
-                  <FileCode size={14} /> JSON
-                </button>
+                  </>
+                )}
+                {/* Export */}
+                <div className="flex items-center gap-3 mt-1 p-3 bg-bg-secondary/30 rounded-lg border border-dashed border-border/50">
+                  <span className="text-[11px] font-bold text-text-tertiary uppercase tracking-widest mr-auto flex items-center gap-1.5">
+                    <Download size={12} /> Export
+                  </span>
+                  <button onClick={() => exportToPDF(message.analysis)} className="text-[11px] font-bold text-yellow-400 hover:text-yellow-300 flex items-center gap-1 px-2 py-1 rounded transition-fast"><FileText size={13} /> PDF</button>
+                  <button onClick={() => exportToCSV(message.analysis.findings || message.analysis)} className="text-[11px] font-bold text-text-secondary hover:text-text-primary flex items-center gap-1 px-2 py-1 rounded transition-fast"><TableIcon size={13} /> CSV</button>
+                  <button onClick={() => exportToJSON(message.analysis)} className="text-[11px] font-bold text-text-secondary hover:text-text-primary flex items-center gap-1 px-2 py-1 rounded transition-fast"><FileCode size={13} /> JSON</button>
+                </div>
               </div>
-            </div>
-          )}
+            )}
+          </div>
         </div>
-      </div>
+      ) : (
+        /* ── User message: pill bubble right-aligned ── */
+        <div className="max-w-[75%] px-4 py-2.5 rounded-2xl rounded-tr-sm bg-bg-surface border border-border text-[15px] leading-relaxed text-text-primary">
+          {message.content}
+        </div>
+      )}
     </motion.div>
   );
 };

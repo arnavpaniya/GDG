@@ -55,7 +55,14 @@ from nyaya_ai.visualizer     import generate_all_charts
 #  Paths
 # --------------------------------------------------------------------------- #
 _THIS_DIR  = os.path.dirname(__file__)
-_DATA_DIR  = os.path.join(_THIS_DIR, "..", "..", "backend", "src", "data")
+
+# Support two layouts:
+#   1. Repo root  → ml/nyaya_ai/../../../backend/src/data/
+#   2. Docker     → /app/backend/src/data/  (set via DATA_DIR env var)
+_DATA_DIR = os.environ.get(
+    "DATA_DIR",
+    os.path.join(_THIS_DIR, "..", "..", "backend", "src", "data")
+)
 
 DATASET_PATHS = {
     "biased": os.path.join(_DATA_DIR, "biased_dataset.csv"),
