@@ -24,7 +24,8 @@ export const exportToPDF = (analysis, filename = "Nyaya_AI_Report.pdf") => {
   // Content
   doc.setTextColor(40, 40, 40);
   doc.setFontSize(16);
-  doc.text(`Fairness Score: ${analysis.score}/100`, 20, 60);
+  const score = analysis.score ?? analysis.fairness?.score ?? analysis.after?.score ?? 'N/A';
+  doc.text(`Fairness Score: ${score}/100`, 20, 60);
   
   doc.setFont("helvetica", "normal");
   doc.setFontSize(12);
@@ -36,18 +37,23 @@ export const exportToPDF = (analysis, filename = "Nyaya_AI_Report.pdf") => {
   y += 10;
   
   doc.setFont("helvetica", "normal");
-  analysis.findings.forEach((finding, index) => {
+  const findingsList = analysis.findings || analysis.recommendations || (analysis.after ? analysis.after.insights : []) || [];
+  const findingsArray = Array.isArray(findingsList) ? findingsList : [];
+  
+  findingsArray.forEach((finding, index) => {
     if (y > 250) {
       doc.addPage();
       y = 20;
     }
     
     doc.setFont("helvetica", "bold");
-    doc.text(`${index + 1}. ${finding.title}`, 20, y);
+    const title = typeof finding === 'string' ? `Insight ${index + 1}` : (finding.title || `Insight ${index + 1}`);
+    doc.text(`${index + 1}. ${title}`, 20, y);
     y += 7;
     
     doc.setFont("helvetica", "normal");
-    const splitDescription = doc.splitTextToSize(finding.detail, pageWidth - 40);
+    const detailText = typeof finding === 'string' ? finding : (finding.detail || finding.text || finding.description || JSON.stringify(finding));
+    const splitDescription = doc.splitTextToSize(String(detailText), pageWidth - 40);
     doc.text(splitDescription, 20, y);
     y += (splitDescription.length * 7) + 5;
   });
@@ -71,11 +77,13 @@ export const exportToJSON = (data, filename = "analysis_data.json") => {
   document.body.removeChild(link);
 };
 
-export const exportToCSV = (findings, filename = "analysis_findings.csv") => {
+export const exportToCSV = (data, filename = "analysis_findings.csv") => {
   const headers = "Title,Severity,Description\n";
-  const rows = Array.isArray(findings) 
-    ? findings.map(f => `"${f.title}","${f.severity}","${f.detail?.replace(/"/g, '""') || ''}"`).join("\n")
-    : "";
+  const findings = Array.isArray(data) ? data : (data?.findings || data?.recommendations || (data?.after ? data.after.insights : []) || []);
+  const rows = findings.map(f => {
+    if (typeof f === 'string') return `"Insight","Info","${f.replace(/"/g, '""')}"`;
+    return `"${f.title || 'Insight'}","${f.severity || 'Info'}","${(f.detail || f.text || f.description || JSON.stringify(f))?.replace(/"/g, '""') || ''}"`;
+  }).join("\n");
   const blob = new Blob([headers + rows], { type: 'text/csv' });
   const url = URL.createObjectURL(blob);
   const link = document.createElement('a');

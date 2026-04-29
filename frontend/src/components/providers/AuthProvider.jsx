@@ -52,6 +52,21 @@ export default function AuthProvider({ children }) {
   useEffect(() => {
     let unsubscribeChats = () => {};
 
+    if (!auth) {
+      // Firebase not configured, provide a prototype user and finish loading
+      console.warn("Firebase not configured. Running in local mode.");
+      setUser({
+        uid: "local-dev-user",
+        name: "Local Dev User",
+        email: "dev@nyaya.ai",
+        avatar: "",
+        plan: "Prototype",
+        isPrototype: true,
+      });
+      setLoading(false);
+      return () => {};
+    }
+
     const unsubscribeAuth = onAuthStateChanged(auth, (firebaseUser) => {
       // Check current state for prototype user
       const currentStoreUser = useStore.getState().user;

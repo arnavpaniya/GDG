@@ -234,7 +234,8 @@ export function generateAnalysisSummary(formattedData) {
     if (formattedData.recommendations.length > 0) {
       summary += `**Recommendations:**\n`;
       formattedData.recommendations.slice(0, 3).forEach((rec, i) => {
-        summary += `${i + 1}. ${rec}\n`;
+        const text = typeof rec === 'string' ? rec : (rec.text || rec.description || rec.title || JSON.stringify(rec));
+        summary += `${i + 1}. ${text}\n`;
       });
     }
     

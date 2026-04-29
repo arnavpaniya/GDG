@@ -2,12 +2,10 @@ import {
   collection, 
   addDoc, 
   query, 
-  where, 
   orderBy, 
   onSnapshot, 
   serverTimestamp,
   doc,
-  deleteDoc,
   getDocs,
   writeBatch
 } from 'firebase/firestore';
@@ -19,8 +17,29 @@ import { db, auth } from './firebase';
  * Handles persistence for analysis sessions.
  */
 
+// --- LOCAL IN-MEMORY STORE (Fallback when Firebase is missing) ---
+let localChats = [];
+let localMessages = {}; // chatId -> array of messages
+let chatSubscribers = [];
+let messageSubscribers = {}; // chatId -> array of callbacks
+
+const notifyChatSubs = () => chatSubscribers.forEach(cb => cb([...localChats]));
+const notifyMsgSubs = (chatId) => {
+  if (messageSubscribers[chatId]) {
+    messageSubscribers[chatId].forEach(cb => cb([...(localMessages[chatId] || [])]));
+  }
+};
+
+// --- API ---
+
 export const subscribeToChats = (userId, callback) => {
-  if (!userId || !db) return () => {};
+  if (!db) {
+    chatSubscribers.push(callback);
+    callback([...localChats]);
+    return () => { chatSubscribers = chatSubscribers.filter(cb => cb !== callback); };
+  }
+  
+  if (!userId) return () => {};
   
   try {
     const q = query(
@@ -42,7 +61,15 @@ export const subscribeToChats = (userId, callback) => {
 };
 
 export const createNewChat = async (userId, title = 'New Analysis') => {
-  if (!userId || !db) throw new Error('User ID required or Firestore not configured');
+  if (!db) {
+    const id = 'local-chat-' + Date.now();
+    localChats.unshift({ id, title, createdAt: new Date() });
+    localMessages[id] = [];
+    notifyChatSubs();
+    return id;
+  }
+  
+  if (!userId) throw new Error('User ID required');
   
   const docRef = await addDoc(collection(db, `users/${userId}/chats`), {
     title,
@@ -54,7 +81,14 @@ export const createNewChat = async (userId, title = 'New Analysis') => {
 };
 
 export const deleteChat = async (userId, chatId) => {
-  if (!userId || !chatId || !db) return;
+  if (!db) {
+    localChats = localChats.filter(c => c.id !== chatId);
+    delete localMessages[chatId];
+    notifyChatSubs();
+    return;
+  }
+  
+  if (!userId || !chatId) return;
   
   try {
     const messagesQuery = query(collection(db, `users/${userId}/chats/${chatId}/messages`));
@@ -65,9 +99,7 @@ export const deleteChat = async (userId, chatId) => {
       batch.delete(msgDoc.ref);
     });
     
-    // Delete the chat document itself
     batch.delete(doc(db, `users/${userId}/chats`, chatId));
-    
     await batch.commit();
   } catch (error) {
     console.error("Firestore deleteChat error:", error);
@@ -76,7 +108,16 @@ export const deleteChat = async (userId, chatId) => {
 };
 
 export const subscribeToMessages = (userId, chatId, callback) => {
-  if (!userId || !chatId || !db) return () => {};
+  if (!db) {
+    if (!messageSubscribers[chatId]) messageSubscribers[chatId] = [];
+    messageSubscribers[chatId].push(callback);
+    callback([...(localMessages[chatId] || [])]);
+    return () => { 
+      messageSubscribers[chatId] = messageSubscribers[chatId].filter(cb => cb !== callback);
+    };
+  }
+  
+  if (!userId || !chatId) return () => {};
   
   try {
     const q = query(
@@ -98,7 +139,18 @@ export const subscribeToMessages = (userId, chatId, callback) => {
 };
 
 export const addMessage = async (userId, chatId, message) => {
-  if (!userId || !chatId || !db) return;
+  if (!db) {
+    if (!localMessages[chatId]) localMessages[chatId] = [];
+    localMessages[chatId].push({
+      id: 'local-msg-' + Date.now() + Math.random(),
+      ...message,
+      createdAt: new Date()
+    });
+    notifyMsgSubs(chatId);
+    return;
+  }
+  
+  if (!userId || !chatId) return;
   
   await addDoc(collection(db, `users/${userId}/chats/${chatId}/messages`), {
     ...message,
@@ -107,11 +159,18 @@ export const addMessage = async (userId, chatId, message) => {
 };
 
 export const updateChatMessages = async (userId, chatId, messages) => {
-  // Deprecated in favor of subcollections
+  // Deprecated
 };
 
 export const clearAllHistory = async (userId) => {
-  if (!userId || !db) return;
+  if (!db) {
+    localChats = [];
+    localMessages = {};
+    notifyChatSubs();
+    return;
+  }
+  
+  if (!userId) return;
   
   const chatsQuery = query(collection(db, `users/${userId}/chats`));
   const chatsSnapshot = await getDocs(chatsQuery);
@@ -119,14 +178,11 @@ export const clearAllHistory = async (userId) => {
   const batch = writeBatch(db);
   
   for (const chatDoc of chatsSnapshot.docs) {
-    // Delete messages subcollection
     const messagesQuery = query(collection(db, `users/${userId}/chats/${chatDoc.id}/messages`));
     const messagesSnapshot = await getDocs(messagesQuery);
     messagesSnapshot.forEach((msgDoc) => {
       batch.delete(msgDoc.ref);
     });
-    
-    // Delete the chat itself
     batch.delete(chatDoc.ref);
   }
   
@@ -137,5 +193,3 @@ export const updateUserProfile = async (displayName) => {
   if (!auth || !auth.currentUser) return;
   await updateProfile(auth.currentUser, { displayName });
 };
-
-
